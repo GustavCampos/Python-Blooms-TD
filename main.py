@@ -21,20 +21,33 @@ def main():
         globals_variables["resolution"]
     )
     
-    wp_1 = WayPoint(0.1, 0.1)
-    wp_2 = WayPoint(0.9, 0.9)
-    wp_3 = WayPoint(0.4, 0.4)    
+    wp_1 = WayPoint(0.01, 0.01)
+    wp_2 = WayPoint(0.2, 0.2)
+    wp_3 = WayPoint(0.2, 0.01, True)
+    wp_4 = WayPoint(0.9, 0.2)
+    wp_5 = WayPoint(0.55, 0.9, True)
+    
+    map_track = [{
+        "ip": wp_1,
+        "fp": wp_2,
+        "rp": wp_3,
+        "vm": 10
+    },{
+        "ip": wp_2,
+        "fp": wp_4,
+        "rp": wp_5,
+        "vm": 3 
+    }] 
     
     # print(degree_variation)  
-    
-    WayPoint_range = 0
         
     running = True
     while running:
         surface.fill((0, 0, 0))
-        wp_1.draw(surface)
-        wp_2.draw(surface)
-        wp_3.draw(surface)
+        for stage in map_track:
+            for key, item in stage.items():
+                if (key != "vm"):
+                    item.draw(surface)
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -42,20 +55,14 @@ def main():
             
         try:
             # print(bloom.direction)
-            bloom.move((wp_1.x, wp_1.y), (wp_2.x, wp_2.y), (wp_3.x, wp_3.y), WayPoint_range)
+            bloom.move()
             bloom.draw(surface)
         except NameError:
-            bloom = Bloom(
-                20, 
-                pygame.Color(0, 255, 0), 
-                1, 
-                wp_1.x, wp_1.y
-            )
+            bloom = Bloom(20, pygame.Color(0, 255, 0), 1, map_track)
         
         # print(pygame_clock.get_fps())
         pygame.display.update()
         pygame_clock.tick(globals_variables["max_fps"])
-        WayPoint_range += 0.01
                 
     pygame.font.quit()
     pygame.display.quit()
