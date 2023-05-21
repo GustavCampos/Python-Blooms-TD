@@ -1,17 +1,13 @@
 import pygame
-from random import randint
-
+from packages.utilities.math_functions import bezier_curve
+from math import sin, cos, radians, ceil
 
 class Bloom:
-    def __init__(self, size: int, color: pygame.Color, velocity: int) -> None:
+    def __init__(self, size: int, color: pygame.Color, velocity: int, x: int, y:int, direction: float=0) -> None:
         self.size = size
         self.velocity = velocity
-        
-        surface = pygame.display.get_surface()
-        x_max_value = surface.get_width() - self.size
-        y_max_value = surface.get_height() - self.size
-        
-        self.location = (randint(0 , x_max_value), randint(0, y_max_value))
+        self.direction = direction
+        self.location = (x, y)
         self.color = color
         
         self.rect = pygame.Rect(
@@ -21,8 +17,15 @@ class Bloom:
             self.size
         )
         
-    def move(self, direction: str):
-        print(direction)
+        self.vector = pygame.math.Vector2()
+        
+    def move(self, point1, point2, referencePoint, range_value):
+        result_tuple = bezier_curve(point1, point2, referencePoint, range_value)
+        
+        self.rect = self.rect.move(
+            result_tuple[0] - self.rect.x,
+            result_tuple[-1] - self.rect.y,
+        )
         
     def draw(self, surface):
         pygame.draw.rect(surface, self.color, self.rect)
