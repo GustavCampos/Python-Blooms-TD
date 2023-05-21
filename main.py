@@ -1,14 +1,13 @@
-from random import random
 import pygame
-from math import radians
 from packages.utilities.way_point import WayPoint
 from packages.objects.bloom import Bloom
+from packages.objects.bloom_factory import BloomFactory
+
 
 globals_variables = {
     "max_fps": 60,
     "resolution": (800, 600)
 }
-
 
 
 def main():
@@ -21,44 +20,26 @@ def main():
         globals_variables["resolution"]
     )
     
-    wp_1 = WayPoint(0.01, 0.01)
-    wp_2 = WayPoint(0.2, 0.2)
-    wp_3 = WayPoint(0.2, 0.01, True)
-    wp_4 = WayPoint(0.9, 0.2)
-    wp_5 = WayPoint(0.55, 0.9, True)
-    
-    map_track = [{
-        "ip": wp_1,
-        "fp": wp_2,
-        "rp": wp_3,
-        "vm": 10
-    },{
-        "ip": wp_2,
-        "fp": wp_4,
-        "rp": wp_5,
-        "vm": 3 
-    }] 
-    
-    # print(degree_variation)  
+    bloom_factory = BloomFactory(map_track)
         
     running = True
     while running:
         surface.fill((0, 0, 0))
+        
+        # #Debug UI________________________________
         for stage in map_track:
             for key, item in stage.items():
                 if (key != "vm"):
                     item.draw(surface)
+        bloom_factory.draw(surface)
+        #________________________________________
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False 
             
-        try:
-            # print(bloom.direction)
-            bloom.move()
-            bloom.draw(surface)
-        except NameError:
-            bloom = Bloom(20, pygame.Color(0, 255, 0), 1, map_track)
+        bloom_factory.create_wave(bloom_wave_1, 10)
+        bloom_factory.draw_running_blooms(surface)
         
         # print(pygame_clock.get_fps())
         pygame.display.update()

@@ -1,5 +1,4 @@
 import pygame
-from math import radians
 
 
 class WayPoint:
@@ -16,5 +15,5 @@ class WayPoint:
         self.y = round(surface.get_height() * y)
         self.rect = pygame.Rect(self.x, self.y, 10, 10)
         
-    def draw(self, surface: pygame.display):
+    def draw(self, surface: pygame.display) -> None:
         pygame.draw.rect(surface, self.color, self.rect)
