@@ -1,11 +1,13 @@
 import pygame
+from os import getcwd
 from packages.utilities.way_point import WayPoint
 from packages.objects.bloom import Bloom
 from packages.objects.bloom_factory import BloomFactory
+from packages.utilities.parser_functions import get_wave_list_from_file, get_waypoints_list
 
 
 globals_variables = {
-    "max_fps": 60,
+    "max_fps": 1,
     "resolution": (800, 600)
 }
 
@@ -20,7 +22,11 @@ def main():
         globals_variables["resolution"]
     )
     
-    bloom_factory = BloomFactory(map_track)
+    current_path = getcwd()
+    map_track = get_waypoints_list(f"{current_path}\config\level_config\map1.txt")
+    blooms_track = get_wave_list_from_file(f"{current_path}\config\wave_config\easy.txt")
+    
+    bloom_factory = BloomFactory(blooms_track, map_track)
         
     running = True
     while running:
@@ -38,8 +44,7 @@ def main():
             if event.type == pygame.QUIT:
                 running = False 
             
-        bloom_factory.create_wave(bloom_wave_1, 10)
-        bloom_factory.draw_running_blooms(surface)
+        bloom_factory.run_map(surface)
         
         # print(pygame_clock.get_fps())
         pygame.display.update()

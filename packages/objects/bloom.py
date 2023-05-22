@@ -4,17 +4,22 @@ from packages.utilities.math_functions import bezier_curve
 from packages.utilities.generic_class import GenericClass
 
 class Bloom:
-    def __init__(self, size: int, color: pygame.Color, x: int, y: int,
-                 track_map_stage: int=0, track_map_stage_range: float=0, velocity=1) -> None:
+    def __init__(self,track_map: list, color: pygame.Color, 
+                 size: int=20, velocity: int=1,
+                 track_map_stage: int=0, track_map_stage_range: float=0) -> None:
         #Manually Defined Attributes
+        self.track_map = track_map
         self.size = size
         self.color = color
-        self.location = GenericClass({"x": x, "y": y})
         self.velocity = velocity
-                
-        #Automatically Defined Attributes
         self.track_map_stage = track_map_stage
         self.track_map_stage_range = track_map_stage_range
+                
+        #Automatically Defined Attributes
+        self.location = GenericClass({
+            "x": track_map[track_map_stage]["ip"].x, 
+            "y": track_map[track_map_stage]["ip"].y
+        })
         self.rect = pygame.Rect(
             self.location.x, 
             self.location.y,
@@ -44,6 +49,9 @@ class Bloom:
             result_tuple[0] - self.rect.x,
             result_tuple[-1] - self.rect.y,
         )
+        
+        #TODO remove this line later
+        # current_stage_dict["vm"] = 1
         
         self.track_map_stage_range += ((current_stage_dict['vm']/1000) * self.velocity)
                    
