@@ -1,6 +1,6 @@
 from random import random
 import pygame
-from math import radians
+from math import radians, sqrt
 from packages.utilities.way_point import WayPoint
 from packages.objects.bloom import Bloom
 
@@ -13,9 +13,14 @@ globals_variables = {
 
 def main():
     pygame.init()
+    pygame.display.set_caption("OpenBloons")
     pygame.display.init()
     pygame.font.init()
     pygame_clock = pygame.time.Clock()
+
+    # loading custom icon
+    game_icon = pygame.image.load('imgs\icon.png')
+    pygame.display.set_icon(game_icon)
     
     surface = pygame.display.set_mode(
         globals_variables["resolution"]
