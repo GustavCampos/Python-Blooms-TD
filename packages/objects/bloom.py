@@ -26,12 +26,16 @@ class Bloom:
             self.size
         )
         
+        
     def move(self) -> None|list:
-        if (self.current_target >= len(self.track_map)):    
+        bloom_reached_end = (self.current_target >= len(self.track_map))
+        
+        if bloom_reached_end:    
             return self.win()
         
         target_waypoint = self.track_map[self.current_target]
         
+        #Move Bloom_______________________________________________
         self.vector.move_towards_ip(
             pygame.Vector2(target_waypoint.x, target_waypoint.y),
             self.velocity
@@ -39,6 +43,7 @@ class Bloom:
         
         self.rect.x = self.vector.x
         self.rect.y = self.vector.y
+        #_________________________________________________________
         
         x_reached = self.vector.x == target_waypoint.x
         y_reached = self.vector.y == target_waypoint.y
@@ -46,8 +51,13 @@ class Bloom:
             self.current_target += 1
     
     
-    def win(self):
+    def win(self) -> None:
         self.active = False
+        
+        
+    def die(self) -> list:
+        self.active = False
+        
         
     def draw(self, surface) -> None:
         pygame.draw.rect(surface, self.color, self.rect)

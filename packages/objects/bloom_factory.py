@@ -20,6 +20,7 @@ class BloomFactory:
         self.current_wave  = 0
         self.current_bloom = 0
         self.current_bloom_quantity = 1
+        self.current_frame = 0
         
     def draw(self, surface: pygame.display) -> None:
         pygame.draw.rect(surface, self.color, self.rect)
@@ -36,32 +37,71 @@ class BloomFactory:
                     
             else:
                 self.created_blooms.remove(bloom)
-            
-            
+                
+                if len(self.created_blooms) == 0:
+                    self.current_bloom = 0
+                    self.current_wave += 1
+
             
     def run_map(self, surface) -> None:
-        if (len(self.level_spawns) > self.current_wave): 
-            current_wave_blooms = self.level_spawns[self.current_wave]        
-            current_bloom = current_wave_blooms[self.current_bloom]
-            
-            match current_bloom["bloom"]:
-                case "red":
-                    color = pygame.Color(255, 0, 0)
-                    velocity = 1
-                case "green":
-                    color = pygame.Color(0, 255, 0)
-                    velocity = 2
-                case "blue":
-                    color = pygame.Color(0, 0, 255)
-                    velocity = 5
-                    
-            current_bloom_object = Bloom(self.map, color, velocity=velocity)
-            self.created_blooms.append(current_bloom_object)
+        all_waves_iterated = (self.current_wave >= len(self.level_spawns))
         
-            self.current_bloom += 1
-            
-            if (len(self.level_spawns[self.current_wave]) <= self.current_bloom):
-                self.current_wave += 1
-                self.current_bloom = 0
+        if not all_waves_iterated:
+            current_wave = self.level_spawns[self.current_wave]
+            self.run_wave(current_wave)
         
         self.draw_running_blooms(surface)
+    
+    
+    def run_wave(self, current_wave: list):
+        all_blooms_created = (self.current_bloom >= len(current_wave))
+        
+        if not all_blooms_created:
+            current_bloom = current_wave[self.current_bloom]
+            
+            frame_interval_completed = self.check_frame_interval(current_bloom)
+            if frame_interval_completed:
+                self.create_bloom(current_bloom)
+                go_next_bloom = self.check_bloom_quantity(current_bloom)
+                
+                if go_next_bloom:
+                    self.current_bloom += 1
+
+    def check_bloom_quantity(self, current_bloom: dict) -> bool:
+        all_blooms_created = (
+            self.current_bloom_quantity >= int(current_bloom["quantity"])
+        )
+        
+        if all_blooms_created:
+            self.current_bloom_quantity = 1
+            return True
+        else:
+            self.current_bloom_quantity += 1
+            return False
+    
+    
+    def check_frame_interval(self, current_bloom: dict) -> bool:
+        all_frames_waited = (self.current_frame >= int(current_bloom["framerate"]))
+        
+        if all_frames_waited:
+            self.current_frame = 0
+            return True
+        
+        self.current_frame += 1
+        return False
+        
+
+    def create_bloom(self, bloom: dict):
+        match bloom["bloom"]:
+            case "red":
+                color = pygame.Color(255, 0, 0)
+                velocity = 1
+            case "green":
+                color = pygame.Color(0, 255, 0)
+                velocity = 2
+            case "blue":
+                color = pygame.Color(0, 0, 255)
+                velocity = 5
+                
+        current_bloom_object = Bloom(self.map, color, velocity=velocity)
+        self.created_blooms.append(current_bloom_object)
