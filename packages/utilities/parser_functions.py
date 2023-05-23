@@ -1,6 +1,6 @@
 import re as regex
-from packages.utilities.way_point import WayPoint
-from math import sqrt
+import packages.utilities.way_point as waypoint
+from packages.utilities.math_functions import bezier_curve
 
 def get_wave_list_from_file(file_path) -> list[str]:
     lines = open(file_path, "r").readlines()
@@ -40,41 +40,49 @@ def parse_bloom_wave(wave_line: str) -> list:
 def get_waypoints_list(file_path) -> list[dict]:
     lines = open(file_path, "r").readlines()
     
-    pattern = r"(?<=[wr]p\={)((\d+\.*\d*),(\d+\.*\d*))(?=})"
+    pattern = r"(?<=[wrg]p\={)((\d+\.*\d*),?(\d+\.*\d*))(?=})"
     
     wp_list = []
     rp_list = []
+    gp_list = []
     return_list = []
     
     for line in lines:
         matched_string = regex.search(pattern, line).group()
-        values = matched_string.split(",")
-        values = [float(values[0]),float(values[-1])] 
         
-                
-        if (line.startswith("wp")):
-            wp_list.append(WayPoint(values[0], values[-1]))
-        elif (line.startswith("rp")):
-            rp_list.append(WayPoint(values[0], values[-1], True))
+        if (line.startswith("gp")):
+            gp_list.append(int(matched_string))
         else:
-            raise ValueError("Given string has not 'wp' or 'rp' at start")
-    
-    for index in range(len(rp_list)):
-        ip = wp_list[index]
-        fp = wp_list[index + 1]
-        rp = rp_list[index]
+            values = matched_string.split(',')
+            values = float(values[0]), float(values[-1])
+            
+            if (line.startswith("wp")):
+                wp_list.append(waypoint.WayPoint(values[0], values[-1]))
+            elif (line.startswith("rp")):
+                rp_list.append(waypoint.ReferenceWayPoint(values[0], values[-1]))
+            else:
+                raise ValueError("Given string has not 'wp', 'rp' or 'gp' at start")    
+                
         
-        length_fp_ip = sqrt(((fp.x - ip.x)**2) + ((fp.y - ip.y)**2))
-        length_rp_ip = sqrt(((rp.x - ip.x)**2) + ((rp.y - ip.y)**2))
-        length_rp_fp = sqrt(((rp.x - fp.x)**2) + ((rp.y - fp.y)**2))
+    for index in range(len(wp_list)):
+        return_list.append(wp_list[index])
         
-        length = length_fp_ip - (length_rp_fp + length_rp_ip) / 2
+        if (index == len(wp_list) - 1):
+            break
         
-        return_list.append({
-            "ip": ip,
-            "fp": fp,
-            "rp": rp,
-            "vm": length
-        })
+        range_part = (1 / (gp_list[index] + 1))
+        range_point = 0
+        for _ in range(gp_list[index]):
+            range_point += range_part
+            
+            generated_xy = bezier_curve(
+                (wp_list[index].x, wp_list[index].y), 
+                (wp_list[index + 1].x, wp_list[index + 1].y), 
+                (rp_list[index].x, rp_list[index].y), 
+                range_point
+            )
+            
+            return_list.append(waypoint.GeneratedWayPoint(generated_xy[0], generated_xy[-1]))
+
         
     return return_list

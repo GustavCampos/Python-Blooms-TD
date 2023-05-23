@@ -3,15 +3,15 @@ from packages.objects.bloom import Bloom
 
 
 class BloomFactory:
-    def __init__(self, level_spawns: list[dict], waypoints_map: list[dict]) -> None:
+    def __init__(self, level_spawns: list[dict], waypoints_map: list) -> None:
         ##Manually defined Attributes
         self.level_spawns = level_spawns
         self.map = waypoints_map
         
         
         ##Automatacally defined attributes
-        self.x = waypoints_map[0]["ip"].x
-        self.y = waypoints_map[0]["ip"].y
+        self.x = waypoints_map[0].x
+        self.y = waypoints_map[0].y
         self.color = pygame.Color(255, 0, 255)
         
         self.rect = pygame.Rect(self.x, self.y, 5, 5)
@@ -26,10 +26,18 @@ class BloomFactory:
         
         
     def draw_running_blooms(self, surface) -> None:
-        for bloom in self.created_blooms:
-            bloom.move()
-            bloom.draw(surface)
-        
+        for bloom in self.created_blooms:            
+            if bloom.active:
+                blooms_created = bloom.move()
+                bloom.draw(surface)
+                
+                if (blooms_created):
+                    self.created_blooms.append(*blooms_created)
+                    
+            else:
+                self.created_blooms.remove(bloom)
+            
+            
             
     def run_map(self, surface) -> None:
         if (len(self.level_spawns) > self.current_wave): 
@@ -39,12 +47,15 @@ class BloomFactory:
             match current_bloom["bloom"]:
                 case "red":
                     color = pygame.Color(255, 0, 0)
+                    velocity = 1
                 case "green":
                     color = pygame.Color(0, 255, 0)
+                    velocity = 2
                 case "blue":
                     color = pygame.Color(0, 0, 255)
+                    velocity = 5
                     
-            current_bloom_object = Bloom(self.map, color)
+            current_bloom_object = Bloom(self.map, color, velocity=velocity)
             self.created_blooms.append(current_bloom_object)
         
             self.current_bloom += 1

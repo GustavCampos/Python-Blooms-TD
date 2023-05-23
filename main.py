@@ -7,7 +7,7 @@ from packages.utilities.parser_functions import get_wave_list_from_file, get_way
 
 
 globals_variables = {
-    "max_fps": 1,
+    "max_fps": 60,
     "resolution": (800, 600)
 }
 
@@ -27,24 +27,30 @@ def main():
     blooms_track = get_wave_list_from_file(f"{current_path}\config\wave_config\easy.txt")
     
     bloom_factory = BloomFactory(blooms_track, map_track)
-        
+            
     running = True
     while running:
         surface.fill((0, 0, 0))
         
         # #Debug UI________________________________
-        for stage in map_track:
-            for key, item in stage.items():
-                if (key != "vm"):
-                    item.draw(surface)
-        bloom_factory.draw(surface)
+        for item in map_track:
+            item.draw(surface)
+        # bloom_factory.draw(surface)
         #________________________________________
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False 
+            if event.type == pygame.MOUSEBUTTONUP:
+                print(pygame.mouse.get_pos())
             
         bloom_factory.run_map(surface)
+        # try:
+        #     bloom.move()
+        #     bloom.draw(surface)
+        # except NameError:
+        #     bloom = Bloom(map_track, pygame.Color(20,102,87), velocity=10)
+            
         
         # print(pygame_clock.get_fps())
         pygame.display.update()
