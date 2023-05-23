@@ -1,61 +1,63 @@
 import pygame
-from packages.utilities.way_point import WayPoint
-from packages.utilities.math_functions import bezier_curve
-from packages.utilities.generic_class import GenericClass
 
 class Bloom:
-    def __init__(
-        self, 
-        size: int, 
-        color: pygame.Color, 
-        velocity: int, 
-        track_map: tuple[dict[WayPoint]]
-    ) -> None:
+    def __init__(self, track_map: list, color: pygame.Color,
+                 size: int=20, velocity: int=1, current_target: int=1,
+                 custom_x: int=-1, custom_y: int=-1) -> None:
         #Manually Defined Attributes
-        self.size = size
-        self.color = color
-        self.velocity = velocity
         self.track_map = track_map
-        
+        self.color = color
+        self.size = size
+        self.velocity = velocity
+        self.current_target = current_target
+                
         #Automatically Defined Attributes
-        self.track_map_stage = 0
-        self.track_map_stage_range = 0
-        self.location = GenericClass({
-            "x": track_map[0]["ip"].x, 
-            "y": track_map[0]["ip"].y
-        })
+        self.active = True
+        
+        x = custom_x if custom_x > -1 else track_map[0].x
+        y = custom_y if custom_y > -1 else track_map[0].y
+        
+        self.vector = pygame.Vector2(x, y)
+        
         self.rect = pygame.Rect(
-            self.location.x, 
-            self.location.y,
+            x, 
+            y,
             self.size,
             self.size
         )
         
-    def move(self) -> None:
-        track_stage_are_finished = (self.track_map_stage_range > 1)
-        if (track_stage_are_finished):
-            self.track_map_stage_range = 0
-            self.track_map_stage += 1
         
-        all_track_stages_were_iterated = (self.track_map_stage >= len(self.track_map))
-        if (all_track_stages_were_iterated):
-            del self
+    def move(self) -> None|list:
+        bloom_reached_end = (self.current_target >= len(self.track_map))
         
-        current_stage_dict = self.track_map[self.track_map_stage]
+        if bloom_reached_end:    
+            return self.win()
         
-        initial_point = (current_stage_dict['ip'].x, current_stage_dict['ip'].y) 
-        final_point = (current_stage_dict['fp'].x, current_stage_dict['fp'].y) 
-        reference_point = (current_stage_dict['rp'].x, current_stage_dict['rp'].y) 
+        target_waypoint = self.track_map[self.current_target]
         
-        result_tuple = bezier_curve(initial_point, final_point, reference_point, self.track_map_stage_range)
-        
-        self.rect = self.rect.move(
-            result_tuple[0] - self.rect.x,
-            result_tuple[-1] - self.rect.y,
+        #Move Bloom_______________________________________________
+        self.vector.move_towards_ip(
+            pygame.Vector2(target_waypoint.x, target_waypoint.y),
+            self.velocity
         )
         
-        self.track_map_stage_range += (current_stage_dict['vm']/ 1000)
-                   
+        self.rect.x = self.vector.x
+        self.rect.y = self.vector.y
+        #_________________________________________________________
+        
+        x_reached = self.vector.x == target_waypoint.x
+        y_reached = self.vector.y == target_waypoint.y
+        if x_reached and y_reached:
+            self.current_target += 1
+    
+    
+    def win(self) -> None:
+        self.active = False
+        
+        
+    def die(self) -> list:
+        self.active = False
+        
         
     def draw(self, surface) -> None:
         pygame.draw.rect(surface, self.color, self.rect)

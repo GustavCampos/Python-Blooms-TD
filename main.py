@@ -1,14 +1,14 @@
-from random import random
 import pygame
-from math import radians, sqrt
 from packages.utilities.way_point import WayPoint
 from packages.objects.bloom import Bloom
+from packages.objects.bloom_factory import BloomFactory
+from packages.utilities.parser_functions import get_wave_list_from_file, get_waypoints_list
+
 
 globals_variables = {
     "max_fps": 60,
     "resolution": (800, 600)
 }
-
 
 
 def main():
@@ -26,44 +26,35 @@ def main():
         globals_variables["resolution"]
     )
     
-    wp_1 = WayPoint(0.01, 0.01)
-    wp_2 = WayPoint(0.2, 0.2)
-    wp_3 = WayPoint(0.2, 0.01, True)
-    wp_4 = WayPoint(0.9, 0.2)
-    wp_5 = WayPoint(0.55, 0.9, True)
+    current_path = getcwd()
+    map_track = get_waypoints_list(f"{current_path}\config\level_config\map1.txt")
+    blooms_track = get_wave_list_from_file(f"{current_path}\config\wave_config\easy.txt")
     
-    map_track = [{
-        "ip": wp_1,
-        "fp": wp_2,
-        "rp": wp_3,
-        "vm": 10
-    },{
-        "ip": wp_2,
-        "fp": wp_4,
-        "rp": wp_5,
-        "vm": 3 
-    }] 
-    
-    # print(degree_variation)  
-        
+    bloom_factory = BloomFactory(blooms_track, map_track)
+            
     running = True
     while running:
         surface.fill((0, 0, 0))
-        for stage in map_track:
-            for key, item in stage.items():
-                if (key != "vm"):
-                    item.draw(surface)
+        
+        # #Debug UI________________________________
+        for item in map_track:
+            item.draw(surface)
+        # bloom_factory.draw(surface)
+        #________________________________________
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False 
+            if event.type == pygame.MOUSEBUTTONUP:
+                print(pygame.mouse.get_pos())
             
-        try:
-            # print(bloom.direction)
-            bloom.move()
-            bloom.draw(surface)
-        except NameError:
-            bloom = Bloom(20, pygame.Color(0, 255, 0), 1, map_track)
+        bloom_factory.run_map(surface)
+        # try:
+        #     bloom.move()
+        #     bloom.draw(surface)
+        # except NameError:
+        #     bloom = Bloom(map_track, pygame.Color(20,102,87), velocity=10)
+            
         
         # print(pygame_clock.get_fps())
         pygame.display.update()
