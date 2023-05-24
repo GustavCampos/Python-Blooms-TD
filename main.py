@@ -1,39 +1,43 @@
-import time
+import os 
 import pygame
-from os import getcwd
+import time
 from packages.objects.bloom_factory import BloomFactory
 from packages.utilities.parser_functions import get_wave_list_from_file, get_waypoints_list
 
 
 globals_variables = {
-    "max_fps":0,
-    "resolution": (800, 600)
+    "max_fps": 60,
+    "resolution": (800, 600),
+    "vsync_opt": 1
 }
 
-def main():
-    last_time = time.time()
-    
+def main():    
     pygame.init()
     pygame.display.set_caption("OpenBloons")
     pygame.display.init()
     pygame.font.init()
     pygame_clock = pygame.time.Clock()
-    current_path = f"{getcwd()}\data"
+    current_path = os.getcwd()
 
     # loading custom icon_________________________________________________________________
-    game_icon = pygame.image.load(f'{current_path}\imgs\icon.png')
+    game_icon = pygame.image.load(os.path.join(current_path, 'data', 'imgs', 'icon.png'))
     pygame.display.set_icon(game_icon)
     
     surface = pygame.display.set_mode(
         globals_variables["resolution"],
-        vsync=0
+        vsync=globals_variables["vsync_opt"]
     )
     
-    map_track = get_waypoints_list(f"{current_path}\config\map_config\map1.txt")
-    blooms_track = get_wave_list_from_file(f"{current_path}\config\wave_config\easy.txt")
+    map_track = get_waypoints_list(
+        os.path.join(current_path, 'data', 'config', 'map_config', 'map1.txt')
+    )
+    blooms_track = get_wave_list_from_file(
+        os.path.join(current_path, 'data', 'config', 'wave_config', 'easy.txt')
+    )
     
     bloom_factory = BloomFactory(blooms_track, map_track)
             
+    last_time = time.time()
     running = True
     while running:
         dt = (time.time() - last_time)
@@ -55,12 +59,14 @@ def main():
             if event.type == pygame.MOUSEBUTTONUP:
                 print(pygame.mouse.get_pos())
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_e:
+                if event.key == pygame.K_1:
                     globals_variables["max_fps"] = 10
-                if event.key == pygame.K_f:
+                if event.key == pygame.K_2:
                     globals_variables["max_fps"] = 60
-                if event.key == pygame.K_g:
+                if event.key == pygame.K_3:
                     globals_variables["max_fps"] = 90
+                if event.key == pygame.K_4:
+                    globals_variables["max_fps"] = 0
             
         bloom_factory.run_map(surface, dt)
         

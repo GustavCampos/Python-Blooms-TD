@@ -87,16 +87,11 @@ class BloomFactory:
         
         all_frames_waited = (self.current_frame >= current_bloom_framerate)
 
-        
-                
         if all_frames_waited:
             self.current_frame = 0
             return True
         
         self.current_frame += delta_time
-
-        
-
         return False
         
 
