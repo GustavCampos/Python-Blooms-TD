@@ -1,0 +1,3 @@
+wave{red:1:60,green:1:60,red:1:60}
+wave{green:5:60}
+wave{blue:5:60}

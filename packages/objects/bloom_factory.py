@@ -1,5 +1,7 @@
 import pygame
-from packages.objects.bloom import Bloom
+from packages.objects.bloom.red import BloomRed
+from packages.objects.bloom.green import BloomGreen
+from packages.objects.bloom.blue import BloomBlue
 
 
 class BloomFactory:
@@ -26,10 +28,10 @@ class BloomFactory:
         pygame.draw.rect(surface, self.color, self.rect)
         
         
-    def draw_running_blooms(self, surface) -> None:
+    def draw_running_blooms(self, surface, delta_time) -> None:
         for bloom in self.created_blooms:            
             if bloom.active:
-                blooms_created = bloom.move()
+                blooms_created = bloom.move(delta_time)
                 bloom.draw(surface)
                 
                 if (blooms_created):
@@ -43,23 +45,23 @@ class BloomFactory:
                     self.current_wave += 1
 
             
-    def run_map(self, surface) -> None:
+    def run_map(self, surface, delta_time) -> None:
         all_waves_iterated = (self.current_wave >= len(self.level_spawns))
         
         if not all_waves_iterated:
             current_wave = self.level_spawns[self.current_wave]
-            self.run_wave(current_wave)
+            self.run_wave(current_wave, delta_time)
         
-        self.draw_running_blooms(surface)
+        self.draw_running_blooms(surface, delta_time)
     
     
-    def run_wave(self, current_wave: list):
+    def run_wave(self, current_wave: list, delta_time):
         all_blooms_created = (self.current_bloom >= len(current_wave))
         
         if not all_blooms_created:
             current_bloom = current_wave[self.current_bloom]
             
-            frame_interval_completed = self.check_frame_interval(current_bloom)
+            frame_interval_completed = self.check_frame_interval(current_bloom, delta_time)
             if frame_interval_completed:
                 self.create_bloom(current_bloom)
                 go_next_bloom = self.check_bloom_quantity(current_bloom)
@@ -80,28 +82,26 @@ class BloomFactory:
             return False
     
     
-    def check_frame_interval(self, current_bloom: dict) -> bool:
-        all_frames_waited = (self.current_frame >= int(current_bloom["framerate"]))
-        
+    def check_frame_interval(self, current_bloom: dict, delta_time) -> bool:       
+        current_bloom_framerate = (int(current_bloom["framerate"]) * delta_time)
+        print(current_bloom_framerate)
+        all_frames_waited = (self.current_frame >= current_bloom_framerate)
+                
         if all_frames_waited:
             self.current_frame = 0
             return True
         
-        self.current_frame += 1
+        self.current_frame += delta_time
         return False
         
 
     def create_bloom(self, bloom: dict):
         match bloom["bloom"]:
             case "red":
-                color = pygame.Color(255, 0, 0)
-                velocity = 1
+                created_bloom = BloomRed(self.map)
             case "green":
-                color = pygame.Color(0, 255, 0)
-                velocity = 2
+                created_bloom = BloomGreen(self.map)
             case "blue":
-                color = pygame.Color(0, 0, 255)
-                velocity = 5
+                created_bloom = BloomBlue(self.map)
                 
-        current_bloom_object = Bloom(self.map, color, velocity=velocity)
-        self.created_blooms.append(current_bloom_object)
+        self.created_blooms.append(created_bloom)
