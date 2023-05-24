@@ -83,15 +83,20 @@ class BloomFactory:
     
     
     def check_frame_interval(self, current_bloom: dict, delta_time) -> bool:       
-        current_bloom_framerate = (int(current_bloom["framerate"]) * delta_time)
-        print(current_bloom_framerate)
+        current_bloom_framerate = (int(current_bloom["framerate"]))
+        
         all_frames_waited = (self.current_frame >= current_bloom_framerate)
+
+        
                 
         if all_frames_waited:
             self.current_frame = 0
             return True
         
         self.current_frame += delta_time
+
+        
+
         return False
         
 

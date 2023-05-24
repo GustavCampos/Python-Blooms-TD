@@ -6,7 +6,7 @@ from packages.utilities.parser_functions import get_wave_list_from_file, get_way
 
 
 globals_variables = {
-    "max_fps": 1000,
+    "max_fps":0,
     "resolution": (800, 600)
 }
 
@@ -26,7 +26,7 @@ def main():
     
     surface = pygame.display.set_mode(
         globals_variables["resolution"],
-        vsync=1
+        vsync=0
     )
     
     map_track = get_waypoints_list(f"{current_path}\config\map_config\map1.txt")
