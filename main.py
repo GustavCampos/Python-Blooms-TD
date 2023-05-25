@@ -1,11 +1,14 @@
-import os 
+import configparser
+import os
 import pygame
 import time
 import packages.utilities.parser_functions as parser
 from packages.objects.bloom_factory import BloomFactory
 
 
-config_opt = parser.get_config_dict(os.path.join(os.getcwd(), 'config.cfg'))
+config_opt = configparser.ConfigParser()
+config_opt.read(os.path.join(os.getcwd(), 'config.ini'))
+
 print(config_opt.sections())
 
 def main():    
@@ -21,14 +24,14 @@ def main():
     pygame.display.set_icon(game_icon)
     
     surface = pygame.display.set_mode(
-        [config_opt["DEFAULT"]["WIDTH"], config_opt["RESOLUTION"]["HEIGHT"]],
-        vsync=config_opt["vsync_opt"]
+        [int(config_opt["DISPLAY"]["SCREEN_WIDTH"]), int(config_opt["DISPLAY"]["SCREEN_HEIGHT"])],
+        vsync=int(config_opt["DISPLAY"]["VSYNC_OPTION"])
     )
     
-    map_track = get_waypoints_list(
+    map_track = parser.get_waypoints_list(
         os.path.join(current_path, 'data', 'config', 'map_config', 'map1.txt')
     )
-    blooms_track = get_wave_list_from_file(
+    blooms_track = parser.get_wave_list_from_file(
         os.path.join(current_path, 'data', 'config', 'wave_config', 'easy.txt')
     )
     
@@ -69,7 +72,7 @@ def main():
         
         pygame.display.set_caption(f"OpenBloons : {pygame_clock.get_fps()}")
         pygame.display.update()
-        pygame_clock.tick(config_opt["max_fps"])
+        pygame_clock.tick(int(config_opt["DISPLAY"]["MAX_FPS"]))
                 
     pygame.font.quit()
     pygame.display.quit()

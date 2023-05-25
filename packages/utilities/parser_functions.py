@@ -87,7 +87,3 @@ def get_waypoints_list(file_path) -> list[dict]:
 
         
     return return_list
-
-
-def get_config_dict(path: str) -> list:
-    return configparser.ConfigParser().read(path)
