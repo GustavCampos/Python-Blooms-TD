@@ -19,11 +19,16 @@ def main():
     # loading custom icon_________________________________________________________________
     game_icon = pygame.image.load(os.path.join(current_path, 'data', 'imgs', 'icon.png'))
     pygame.display.set_icon(game_icon)
+
+    # loading test map for color picker feature___________________________________________
+    color_picker_tester = pygame.image.load(os.path.join(current_path, 'data', 'imgs', 'color_picker_tester.png'))
     
     surface = pygame.display.set_mode(
         [config_opt["DEFAULT"]["WIDTH"], config_opt["RESOLUTION"]["HEIGHT"]],
         vsync=config_opt["vsync_opt"]
     )
+
+
     
     map_track = get_waypoints_list(
         os.path.join(current_path, 'data', 'config', 'map_config', 'map1.txt')
@@ -42,7 +47,8 @@ def main():
         last_time = time.time()
 
         
-        surface.fill((0, 0, 0))
+        #surface.fill((0, 0, 0))
+        surface.blit(color_picker_tester, (0,0))
         
         # #Debug UI________________________________
         for item in map_track:
@@ -54,7 +60,12 @@ def main():
             if event.type == pygame.QUIT:
                 running = False 
             if event.type == pygame.MOUSEBUTTONUP:
-                print(pygame.mouse.get_pos())
+                 if event.button == 1:  # Verifica se o botão esquerdo do mouse foi pressionado
+                    mouse_x, mouse_y = event.pos
+                    pixel_color = surface.get_at((mouse_x, mouse_y)) # identifica a cor do pixel
+                    print("Posição do clique: x =", mouse_x, "y =", mouse_y)
+                    print("Cor do pixel:", pixel_color)
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
                     config_opt["max_fps"] = 10
