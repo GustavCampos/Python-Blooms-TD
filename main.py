@@ -1,15 +1,12 @@
 import os 
 import pygame
 import time
+import packages.utilities.parser_functions as parser
 from packages.objects.bloom_factory import BloomFactory
-from packages.utilities.parser_functions import get_wave_list_from_file, get_waypoints_list
 
 
-globals_variables = {
-    "max_fps": 60,
-    "resolution": (800, 600),
-    "vsync_opt": 1
-}
+config_opt = parser.get_config_dict(os.path.join(os.getcwd(), 'config.cfg'))
+print(config_opt.sections())
 
 def main():    
     pygame.init()
@@ -24,8 +21,8 @@ def main():
     pygame.display.set_icon(game_icon)
     
     surface = pygame.display.set_mode(
-        globals_variables["resolution"],
-        vsync=globals_variables["vsync_opt"]
+        [config_opt["DEFAULT"]["WIDTH"], config_opt["RESOLUTION"]["HEIGHT"]],
+        vsync=config_opt["vsync_opt"]
     )
     
     map_track = get_waypoints_list(
@@ -52,7 +49,7 @@ def main():
             item.draw(surface)
         # bloom_factory.draw(surface)
         #________________________________________
-        
+                
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False 
@@ -60,19 +57,19 @@ def main():
                 print(pygame.mouse.get_pos())
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
-                    globals_variables["max_fps"] = 10
+                    config_opt["max_fps"] = 10
                 if event.key == pygame.K_2:
-                    globals_variables["max_fps"] = 60
+                    config_opt["max_fps"] = 60
                 if event.key == pygame.K_3:
-                    globals_variables["max_fps"] = 90
+                    config_opt["max_fps"] = 90
                 if event.key == pygame.K_4:
-                    globals_variables["max_fps"] = 0
+                    config_opt["max_fps"] = 0
             
         bloom_factory.run_map(surface, dt)
         
         pygame.display.set_caption(f"OpenBloons : {pygame_clock.get_fps()}")
         pygame.display.update()
-        pygame_clock.tick(globals_variables["max_fps"])
+        pygame_clock.tick(config_opt["max_fps"])
                 
     pygame.font.quit()
     pygame.display.quit()

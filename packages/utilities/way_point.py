@@ -13,7 +13,8 @@ class WayPoint:
         self.percentage_y = y
         self.x = round(surface.get_width() * x)
         self.y = round(surface.get_height() * y)
-        self.rect = pygame.Rect(self.x, self.y, 10, 10)
+        self.rect = pygame.Rect(self.x, self.y, 5, 5)
+        self.rect.center = [self.x, self.y]
         
     def draw(self, surface: pygame.display) -> None:
         pygame.draw.rect(surface, self.color, self.rect)
@@ -30,6 +31,7 @@ class GeneratedWayPoint(WayPoint):
         self.x = x
         self.y = y
         self.color = (165, 255, 253)
-        self.rect = pygame.Rect(self.x, self.y, 5, 5)
+        self.rect = pygame.Rect(self.x, self.y, 1, 1)
+        self.rect.center = [self.x, self.y]
         
         

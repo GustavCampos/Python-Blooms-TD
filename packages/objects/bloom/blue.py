@@ -7,7 +7,6 @@ class BloomBlue(Bloom):
         super().__init__(
             track_map=track_map, 
             color=pygame.Color(0, 0, 255), 
-            size=20,
             velocity=1, 
             current_target=current_target,
             custom_x=custom_x,

@@ -1,3 +1,4 @@
+import configparser
 import re as regex
 import packages.utilities.way_point as waypoint
 from packages.utilities.math_functions import bezier_curve
@@ -86,3 +87,7 @@ def get_waypoints_list(file_path) -> list[dict]:
 
         
     return return_list
+
+
+def get_config_dict(path: str) -> list:
+    return configparser.ConfigParser().read(path)

@@ -18,7 +18,7 @@ class BloomFactory:
         
         self.rect = pygame.Rect(self.x, self.y, 5, 5)
         
-        self.created_blooms = []
+        self.created_blooms = pygame.sprite.Group()
         self.current_wave  = 0
         self.current_bloom = 0
         self.current_bloom_quantity = 1
@@ -32,17 +32,18 @@ class BloomFactory:
         for bloom in self.created_blooms:            
             if bloom.active:
                 blooms_created = bloom.move(delta_time)
-                bloom.draw(surface)
                 
                 if (blooms_created):
-                    self.created_blooms.append(*blooms_created)
+                    self.created_blooms.add(*blooms_created)
                     
             else:
                 self.created_blooms.remove(bloom)
                 
-                if len(self.created_blooms) == 0:
+                if len(self.created_blooms.sprites()) == 0:
                     self.current_bloom = 0
                     self.current_wave += 1
+                    
+        self.created_blooms.draw(surface)
 
             
     def run_map(self, surface, delta_time) -> None:
@@ -104,4 +105,4 @@ class BloomFactory:
             case "blue":
                 created_bloom = BloomBlue(self.map)
                 
-        self.created_blooms.append(created_bloom)
+        self.created_blooms.add(created_bloom)
