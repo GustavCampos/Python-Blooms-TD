@@ -9,7 +9,6 @@ from packages.objects.bloom_factory import BloomFactory
 config_opt = configparser.ConfigParser()
 config_opt.read(os.path.join(os.getcwd(), 'config.ini'))
 
-print(config_opt.sections())
 
 def main():    
     pygame.init()
