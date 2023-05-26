@@ -1,12 +1,14 @@
-import os 
+import configparser
+import os
 import pygame
 import time
-import packages.utilities.parser_functions as parser
+import packages.utilities.functions.parser_functions as parser
 from packages.objects.bloom_factory import BloomFactory
 
 
-config_opt = parser.get_config_dict(os.path.join(os.getcwd(), 'config.cfg'))
-print(config_opt.sections())
+config_opt = configparser.ConfigParser()
+config_opt.read(os.path.join(os.getcwd(), 'config.ini'))
+
 
 def main():    
     pygame.init()
@@ -23,17 +25,19 @@ def main():
     # loading test map for color picker feature___________________________________________
     color_picker_tester = pygame.image.load(os.path.join(current_path, 'data', 'imgs', 'color_picker_tester.png'))
     
-    surface = pygame.display.set_mode(
-        [config_opt["DEFAULT"]["WIDTH"], config_opt["RESOLUTION"]["HEIGHT"]],
-        vsync=config_opt["vsync_opt"]
+    display_surface = pygame.display.set_mode(
+        [int(config_opt["DISPLAY"]["SCREEN_WIDTH"]), int(config_opt["DISPLAY"]["SCREEN_HEIGHT"])],
+        vsync=int(config_opt["DISPLAY"]["VSYNC_OPTION"])
     )
+    
+    surface_map = pygame.Surface((display_surface.get_height(), display_surface.get_height()))
 
 
     
-    map_track = get_waypoints_list(
+    map_track = parser.get_waypoints_list(
         os.path.join(current_path, 'data', 'config', 'map_config', 'map1.txt')
     )
-    blooms_track = get_wave_list_from_file(
+    blooms_track = parser.get_wave_list_from_file(
         os.path.join(current_path, 'data', 'config', 'wave_config', 'easy.txt')
     )
     
@@ -47,12 +51,14 @@ def main():
         last_time = time.time()
 
         
-        #surface.fill((0, 0, 0))
-        surface.blit(color_picker_tester, (0,0))
+        display_surface.fill((0, 0, 255))
+        surface_map.fill((0,0,0))
+        surface_map.blit(color_picker_tester, (0,0))
+        display_surface.blit(surface_map, (0,0))
         
         # #Debug UI________________________________
         for item in map_track:
-            item.draw(surface)
+            item.draw(display_surface)
         # bloom_factory.draw(surface)
         #________________________________________
                 
@@ -62,7 +68,7 @@ def main():
             if event.type == pygame.MOUSEBUTTONUP:
                  if event.button == 1:  # Verifica se o botão esquerdo do mouse foi pressionado
                     mouse_x, mouse_y = event.pos
-                    pixel_color = surface.get_at((mouse_x, mouse_y)) # identifica a cor do pixel
+                    pixel_color = display_surface.get_at((mouse_x, mouse_y)) # identifica a cor do pixel
                     print("Posição do clique: x =", mouse_x, "y =", mouse_y)
                     print("Cor do pixel:", pixel_color)
 
@@ -76,11 +82,11 @@ def main():
                 if event.key == pygame.K_4:
                     config_opt["max_fps"] = 0
             
-        bloom_factory.run_map(surface, dt)
+        bloom_factory.run_map(display_surface, dt)
         
         pygame.display.set_caption(f"OpenBloons : {pygame_clock.get_fps()}")
         pygame.display.update()
-        pygame_clock.tick(config_opt["max_fps"])
+        pygame_clock.tick(int(config_opt["DISPLAY"]["MAX_FPS"]))
                 
     pygame.font.quit()
     pygame.display.quit()
