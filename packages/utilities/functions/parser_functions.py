@@ -1,7 +1,7 @@
 import configparser
 import re as regex
-import packages.utilities.way_point as waypoint
-from packages.utilities.math_functions import bezier_curve
+import packages.utilities.classes.way_point as waypoint
+from packages.utilities.functions.math_functions import bezier_curve
 
 def get_wave_list_from_file(file_path) -> list[str]:
     lines = open(file_path, "r").readlines()

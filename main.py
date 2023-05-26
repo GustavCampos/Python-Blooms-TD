@@ -2,7 +2,7 @@ import configparser
 import os
 import pygame
 import time
-import packages.utilities.parser_functions as parser
+import packages.utilities.functions.parser_functions as parser
 from packages.objects.bloom_factory import BloomFactory
 
 
@@ -44,7 +44,7 @@ def main():
         last_time = time.time()
 
         
-        surface.fill((0, 0, 0))
+        surface.fill((255, 255, 255))
         
         # #Debug UI________________________________
         for item in map_track:

@@ -2,9 +2,13 @@ import pygame
 from os import getcwd
 from os.path import join as path_join
 class Bloom(pygame.sprite.Sprite):
-    def __init__(self, track_map: list, color: pygame.Color,
-                 velocity: int=1, current_target: int=1,
-                 custom_x: int=-1, custom_y: int=-1) -> None:
+    def __init__(self, track_map: list, 
+                 color: pygame.Color, 
+                 image: pygame.Surface,
+                 velocity: int=1, 
+                 current_target: int=1,
+                 custom_x: int=-1, 
+                 custom_y: int=-1) -> None:
         super().__init__()
         
         #Manually Defined Attributes
@@ -14,11 +18,7 @@ class Bloom(pygame.sprite.Sprite):
         self.current_target = current_target
                 
         #Automatically Defined Attributes
-        self.image = pygame.Surface.convert_alpha(
-            pygame.image.load(
-                path_join(getcwd(), "data", 'imgs', 'icon.png')
-            )
-        )
+        self.image = image
         self.active = True
         
         x = custom_x if custom_x > -1 else track_map[0].x
