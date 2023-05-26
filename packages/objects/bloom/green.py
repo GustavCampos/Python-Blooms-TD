@@ -2,7 +2,7 @@ import pygame
 from packages.objects.bloom.bloom import Bloom
 from os import getcwd
 from os.path import join as path_join
-from packages.utilities.classes.sprite_sheet import SpriteSheet
+from packages.graphics.sprite_sheet import SpriteSheet
 
 class BloomGreen(Bloom):
     def __init__(self, track_map: list, current_target: int = 1,

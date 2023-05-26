@@ -1,5 +1,5 @@
 import pygame
-from packages.utilities.classes.sprite_sheet import SpriteSheet
+from packages.graphics.sprite_sheet import SpriteSheet
 from packages.objects.bloom.bloom import Bloom
 from os import getcwd
 from os.path import join as path_join
