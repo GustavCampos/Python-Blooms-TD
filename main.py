@@ -3,7 +3,11 @@ import os
 import pygame
 import time
 import packages.utilities.functions.parser_functions as parser
+from packages.objects.bullet.bullet import Bullet
 from packages.objects.bloom_factory import BloomFactory
+
+from math import radians
+from random import randint
 
 
 config_opt = configparser.ConfigParser()
@@ -44,6 +48,11 @@ def main():
     )
     
     bloom_factory = BloomFactory(blooms_track, map_track)
+    
+    
+    #Bullet Test_________________________________________________________________________
+    bullet_group = pygame.sprite.Group()
+    #____________________________________________________________________________________
             
     last_time = time.time()
     running = True
@@ -63,7 +72,8 @@ def main():
             if event.type == pygame.QUIT:
                 running = False 
             if event.type == pygame.MOUSEBUTTONUP:
-                 if event.button == 1:  # Verifica se o botão esquerdo do mouse foi pressionado
+                
+                if event.button == 2:  # Verifica se o botão esquerdo do mouse foi pressionado
                     mouse_x, mouse_y = event.pos
                     
                     mouse_x_p = (mouse_x * 100) / surface_map.get_width()
@@ -72,6 +82,14 @@ def main():
                     pixel_color = surface_map.get_at((mouse_x, mouse_y)) # identifica a cor do pixel
                     print("Posição do clique: x =", mouse_x_p, "y =", mouse_y_p)
                     print("Cor do pixel:", pixel_color)
+                
+                if event.button == 1:
+                    mouse_x, mouse_y = event.pos
+                    
+                    angle = randint(0, 359)
+                    
+                    bullet = Bullet(mouse_x, mouse_y, radians(angle), 10000, 1)
+                    bullet_group.add(bullet)
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
@@ -86,7 +104,10 @@ def main():
         #Screen Update__________________________________________________________    
         bloom_factory.run_map(surface_map, dt)
         display_surface.blit(surface_map, (0,0))
+        bullet_group.update(dt)
+        bullet_group.draw(display_surface)
         
+
         # #Debug UI________________________________
         for item in map_track:
             item.draw(display_surface)

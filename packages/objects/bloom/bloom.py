@@ -1,6 +1,7 @@
 import pygame
 from os import getcwd
-from os.path import join as path_join
+
+
 class Bloom(pygame.sprite.Sprite):
     def __init__(self, track_map: list, 
                  color: pygame.Color, 

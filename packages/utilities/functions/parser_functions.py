@@ -86,4 +86,4 @@ def get_waypoints_list(file_path, surface) -> list:
             return_list.append(waypoint.GeneratedWayPoint(generated_xy[0], generated_xy[-1]))
 
         
-    return return_list, rp_list
+    return [return_list, rp_list]
