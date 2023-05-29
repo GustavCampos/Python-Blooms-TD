@@ -37,8 +37,8 @@ class BloomFactory:
                     self.created_blooms.add(*blooms_created)
                     
             else:
-                self.created_blooms.remove(bloom)
-                
+                bloom.kill()
+                 
                 if len(self.created_blooms.sprites()) == 0:
                     self.current_bloom = 0
                     self.current_wave += 1

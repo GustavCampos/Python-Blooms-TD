@@ -6,6 +6,7 @@ class Bloom(pygame.sprite.Sprite):
     def __init__(self, track_map: list, 
                  color: pygame.Color, 
                  image: pygame.Surface,
+                 life: int=1,
                  velocity: int=1, 
                  current_target: int=1,
                  custom_x: int=-1, 
@@ -15,6 +16,7 @@ class Bloom(pygame.sprite.Sprite):
         #Manually Defined Attributes
         self.track_map = track_map
         self.color = color
+        self.life = life
         self.velocity = velocity
         self.current_target = current_target
                 
@@ -32,7 +34,7 @@ class Bloom(pygame.sprite.Sprite):
         
     def draw(self, surface) -> None:
         self.image.blit(surface, self.rect, self.rect)
-        # pygame.draw.rect(surface, self.color, self.rect)
+
         
     def move(self, delta_time) -> None|list:
         bloom_reached_end = (self.current_target >= len(self.track_map))
@@ -57,4 +59,11 @@ class Bloom(pygame.sprite.Sprite):
             self.current_target += 1
     
     def win(self) -> None:
-        self.active = False
+        self.set_active(False)
+    
+    ##Getters and Setters____________________________________________
+    def set_active(self, bool: bool) -> None:
+        self.active = bool
+        
+    def get_active(self) -> bool:
+        return self.active

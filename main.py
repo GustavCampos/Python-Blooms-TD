@@ -10,8 +10,10 @@ from math import radians
 from random import randint
 
 
-config_opt = configparser.ConfigParser()
-config_opt.read(os.path.join(os.getcwd(), 'config.ini'))
+GLOBAL_COLOR_KEY_VALUE = (138, 111, 48)
+
+CONFIG_OPT = configparser.ConfigParser()
+CONFIG_OPT.read(os.path.join(os.getcwd(), 'config.ini'))
 
 
 def main():    
@@ -27,14 +29,21 @@ def main():
     pygame.display.set_icon(game_icon)
     
     display_surface = pygame.display.set_mode(
-        [int(config_opt["DISPLAY"]["SCREEN_WIDTH"]), int(config_opt["DISPLAY"]["SCREEN_HEIGHT"])],
-        vsync=int(config_opt["DISPLAY"]["VSYNC_OPTION"])
+        [int(CONFIG_OPT["DISPLAY"]["SCREEN_WIDTH"]), int(CONFIG_OPT["DISPLAY"]["SCREEN_HEIGHT"])],
+        vsync=int(CONFIG_OPT["DISPLAY"]["VSYNC_OPTION"])
     )
     
     surface_map = pygame.Surface((
         display_surface.get_height() * (4/3), 
         display_surface.get_height()
     ))
+    
+    surface_blooms = surface_map.convert_alpha().copy()
+    surface_blooms.set_colorkey(GLOBAL_COLOR_KEY_VALUE)
+    
+    surface_bullet = surface_map.convert_alpha().copy()
+    surface_bullet.set_colorkey(GLOBAL_COLOR_KEY_VALUE)
+    
     
     # loading test map for color picker feature___________________________________________
     color_picker_tester = pygame.image.load(os.path.join(current_path, 'data', 'imgs', 'map_test.png'))
@@ -73,7 +82,7 @@ def main():
                 running = False 
             if event.type == pygame.MOUSEBUTTONUP:
                 
-                if event.button == 2:  # Verifica se o botão esquerdo do mouse foi pressionado
+                if event.button == 3:  # Verifica se o botão direito do mouse foi pressionado
                     mouse_x, mouse_y = event.pos
                     
                     mouse_x_p = (mouse_x * 100) / surface_map.get_width()
@@ -86,41 +95,46 @@ def main():
                 if event.button == 1:
                     mouse_x, mouse_y = event.pos
                     
-                    angle = randint(0, 359)
+                    # angle = randint(0, 359)
+                    angle = 180
                     
-                    bullet = Bullet(mouse_x, mouse_y, radians(angle), 10000, 1)
+                    bullet = Bullet(mouse_x, mouse_y, radians(angle), 1000, 10)
                     bullet_group.add(bullet)
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
-                    config_opt["max_fps"] = 10
+                    CONFIG_OPT['DISPLAY']= {"max_fps": 10}
                 if event.key == pygame.K_2:
-                    config_opt["max_fps"] = 60
+                    CONFIG_OPT['DISPLAY']= {"max_fps": 60}                    
                 if event.key == pygame.K_3:
-                    config_opt["max_fps"] = 90
+                    CONFIG_OPT['DISPLAY']= {"max_fps": 90}                    
                 if event.key == pygame.K_4:
-                    config_opt["max_fps"] = 0
+                    CONFIG_OPT['DISPLAY']= {"max_fps": 0}                    
         
-        #Screen Update__________________________________________________________    
-        bloom_factory.run_map(surface_map, dt)
+        #Screen Update__________________________________________________________   
+        surface_blooms.fill(surface_blooms.get_colorkey())
+        surface_bullet.fill(surface_bullet.get_colorkey())
+        
+        bloom_factory.run_map(surface_blooms, dt)
+        bullet_group.update(bloom_factory.created_blooms, dt)
+        bullet_group.draw(surface_bullet)
+        
         display_surface.blit(surface_map, (0,0))
-        bullet_group.update(dt)
-        bullet_group.draw(display_surface)
-        
+        display_surface.blit(surface_blooms.convert_alpha(), (0,0))
+        display_surface.blit(surface_bullet.convert_alpha(), (0,0))
 
         # #Debug UI________________________________
         for item in map_track:
             item.draw(display_surface)
         for item in rp_list:
             item.draw(display_surface)
-        # bloom_factory.draw(surface)
         #________________________________________
         
         
         pygame.display.update()
         #_______________________________________________________________________
         
-        pygame_clock.tick(int(config_opt["DISPLAY"]["MAX_FPS"]))
+        pygame_clock.tick(int(CONFIG_OPT["DISPLAY"]["MAX_FPS"]))
         pygame.display.set_caption(f"OpenBloons : {pygame_clock.get_fps()}")
                 
     pygame.font.quit()

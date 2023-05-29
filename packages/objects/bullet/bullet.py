@@ -28,7 +28,7 @@ class Bullet(pygame.sprite.Sprite):
             self.vector.x + (cos(shoot_angle) * shoot_range), #x_axis
             self.vector.y + (sin(shoot_angle) * shoot_range)  #y_axis
         ) 
-        
+
     
     def draw(self, surface: pygame.Surface) -> None:
         self.image.blit(surface, self.rect, self.rect)
@@ -36,12 +36,14 @@ class Bullet(pygame.sprite.Sprite):
         
     def move(self, delta_time) -> None:
         bullet_reached_end = (
-            self.vector.x >= self.target_vector.x and
-            self.vector.y >= self.target_vector.y
+            self.vector.x == self.target_vector.x and
+            self.vector.y == self.target_vector.y
         )
         
         if bullet_reached_end:    
-            pass
+            self.kill()
+            del self
+            return
         
         #Move Bullet_______________________________________________
         self.vector.move_towards_ip(
@@ -51,5 +53,8 @@ class Bullet(pygame.sprite.Sprite):
         
         self.rect.center = [self.vector.x, self.vector.y]
         
-    def update(self, delta_time) -> None:
+    def update(self, bloom_sprite_group, delta_time) -> None: 
         self.move(delta_time)
+        
+        for bloom in pygame.sprite.spritecollide(self, bloom_sprite_group, False):
+            bloom.set_active(False)
