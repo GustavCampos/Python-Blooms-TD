@@ -73,15 +73,7 @@ def main():
                     print("Posição do clique: x =", mouse_x_p, "y =", mouse_y_p)
                     print("Cor do pixel:", pixel_color)
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_1:
-                    config_opt["max_fps"] = 10
-                if event.key == pygame.K_2:
-                    config_opt["max_fps"] = 60
-                if event.key == pygame.K_3:
-                    config_opt["max_fps"] = 90
-                if event.key == pygame.K_4:
-                    config_opt["max_fps"] = 0
+
         
         #Screen Update__________________________________________________________    
         bloom_factory.run_map(surface_map, dt)
