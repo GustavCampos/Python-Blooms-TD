@@ -2,11 +2,9 @@ import pygame
 
 
 class WayPoint:
-    def __init__(self, x: int, y: int) -> None:
+    def __init__(self, x: int, y: int, surface: pygame.Surface) -> None:
         if (1 < x) or (x < 0) or (1 < y) or (y < 0):
             raise AttributeError("x and y need to be beetween 0 and 1")
-        
-        surface = pygame.display.get_surface()
         
         self.color = (255, 0, 0)
         self.percentage_x = x
@@ -21,8 +19,8 @@ class WayPoint:
         
         
 class ReferenceWayPoint(WayPoint):
-    def __init__(self, x: int, y: int) -> None:
-        super().__init__(x, y)
+    def __init__(self, x: int, y: int, surface: pygame.Surface) -> None:
+        super().__init__(x, y, surface)
         self.color = (0, 0, 255)        
         
         

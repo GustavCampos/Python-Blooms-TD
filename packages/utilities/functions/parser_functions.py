@@ -1,7 +1,7 @@
 import configparser
 import re as regex
-import packages.utilities.way_point as waypoint
-from packages.utilities.math_functions import bezier_curve
+import packages.utilities.classes.way_point as waypoint
+from packages.utilities.functions.math_functions import bezier_curve
 
 def get_wave_list_from_file(file_path) -> list[str]:
     lines = open(file_path, "r").readlines()
@@ -38,7 +38,7 @@ def parse_bloom_wave(wave_line: str) -> list:
     
     return wave_list
     
-def get_waypoints_list(file_path) -> list[dict]:
+def get_waypoints_list(file_path, surface) -> list:
     lines = open(file_path, "r").readlines()
     
     pattern = r"(?<=[wrg]p\={)((\d+\.*\d*),?(\d+\.*\d*))(?=})"
@@ -58,9 +58,9 @@ def get_waypoints_list(file_path) -> list[dict]:
             values = float(values[0]), float(values[-1])
             
             if (line.startswith("wp")):
-                wp_list.append(waypoint.WayPoint(values[0], values[-1]))
+                wp_list.append(waypoint.WayPoint(values[0], values[-1], surface))
             elif (line.startswith("rp")):
-                rp_list.append(waypoint.ReferenceWayPoint(values[0], values[-1]))
+                rp_list.append(waypoint.ReferenceWayPoint(values[0], values[-1], surface))
             else:
                 raise ValueError("Given string has not 'wp', 'rp' or 'gp' at start")    
                 
@@ -86,4 +86,4 @@ def get_waypoints_list(file_path) -> list[dict]:
             return_list.append(waypoint.GeneratedWayPoint(generated_xy[0], generated_xy[-1]))
 
         
-    return return_list
+    return return_list, rp_list

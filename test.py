@@ -1,6 +1,6 @@
 import os
 import pygame
-from packages.utilities.parser_functions import get_waypoints_list
+from packages.utilities.functions.parser_functions import get_waypoints_list
 
 globals_variables = {
     "max_fps": 60,
