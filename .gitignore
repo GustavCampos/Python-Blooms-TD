@@ -2,6 +2,6 @@
 .venv
 
 #Script Compiling
-**/__pycache__
+*.pyc
 
 
