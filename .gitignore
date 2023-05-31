@@ -1,2 +1,7 @@
 #Virtual Enviroment
 .venv
+
+#Script Compiling
+**/__pycache__
+
+
