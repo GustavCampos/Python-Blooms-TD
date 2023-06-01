@@ -106,7 +106,6 @@ class Game:
                             self, 
                             MapMode.EASY,
                             os.path.join(self.current_path, 'data', 'config', 'map_config', 'map1.txt'),
-                            os.path.join(self.current_path, 'data', 'config', 'wave_config', 'easy.txt'),
                             os.path.join(self.current_path, 'data', 'imgs', 'color_picker_tester.png'),
                             os.path.join(self.current_path, 'data', 'imgs', 'map_test.png')
                         )

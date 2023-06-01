@@ -1,4 +1,5 @@
 from math import radians
+import os
 import pygame
 from packages.objects.bloom_factory import BloomFactory
 from packages.objects.bullet.bullet import Bullet
@@ -11,38 +12,53 @@ class MapInstance:
                  game_object,
                  map_mode: MapMode,
                  way_points_path,
-                 bloom_track_path,
                  colision_map_path,
                  map_image_path) -> None:
         #Manually Created Attributes
         self.game_object = game_object
         
-        #Automatcally Created Attributes        
-        self.surface_map_image = pygame.image.load(map_image_path).convert()
-        self.surface_colision_map = pygame.image.load(colision_map_path).convert()
+        #Automatcally Created Attributes      
+        bloom_track_path = os.path.join(os.getcwd(), 'data', 'config', 'wave_config', 'normal_game.txt')
         
-        self.surface_bloom = pygame.Surface((
-            game_object.display_surface.get_height() * (4/3), 
+        self.gold = 650
+
+        match map_mode:
+            case MapMode.EASY:                
+                self.life = 200
+                
+            case MapMode.MEDIUM:                
+                self.life = 150
+                
+            case MapMode.HARD:                
+                self.life = 100
+                
+            case MapMode.INPOPABBLE:                
+                self.life = 1
+                
+            case MapMode.CHIMPS:                
+                self.life = 1
+        
+          
+        reference_surface = pygame.Surface((
+            game_object.display_surface.get_height() * (3/2), 
             game_object.display_surface.get_height()  
         ))
-        self.surface_bullet = self.surface_bloom.copy()
-        self.surface_monkey = self.surface_bloom.copy()
-            
-        self.surface_bloom.set_colorkey(game_object.GLOBAL_COLOR_KEY_VALUE)
-        self.surface_bullet.set_colorkey(game_object.GLOBAL_COLOR_KEY_VALUE)
-        self.surface_monkey.set_colorkey(game_object.GLOBAL_COLOR_KEY_VALUE)
-    
-        self.gold = 0
         
-        match map_mode:
-            case MapMode.EASY:
-                self.life = 200
-            case MapMode.MEDIUM:
-                self.life = 150
-            case MapMode.HARD:
-                self.life = 100
-            case _:
-                self.life = 1
+        map_image = pygame.image.load(map_image_path).convert()
+        self.surface_map_image = pygame.transform.scale(map_image, reference_surface.get_size())
+        
+        
+        collision_map = pygame.image.load(colision_map_path).convert()
+        self.surface_colision_map = pygame.transform.scale(collision_map, reference_surface.get_size())
+        
+        self.surface_bloom = reference_surface.copy()
+        self.surface_bloom.set_colorkey(game_object.GLOBAL_COLOR_KEY_VALUE)
+        
+        self.surface_bullet = reference_surface.copy()
+        self.surface_bullet.set_colorkey(game_object.GLOBAL_COLOR_KEY_VALUE)
+        
+        self.surface_monkey = reference_surface.copy()
+        self.surface_monkey.set_colorkey(game_object.GLOBAL_COLOR_KEY_VALUE)                    
                 
         #Track for Blooms
         self.map_track, self.rp_list = parser.get_waypoints_list(way_points_path, self.surface_map_image)
@@ -75,6 +91,7 @@ class MapInstance:
                     
             
             #Render Frame_______________________________________________________________________
+            self.game_object.display_surface.fill((0, 0, 0))
             self.surface_bloom.fill(self.surface_bloom.get_colorkey())
             self.surface_bullet.fill(self.surface_bullet.get_colorkey())
             

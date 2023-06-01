@@ -5,4 +5,4 @@ class MapMode(Enum):
     MEDIUM = 2
     HARD = 3
     INPOPABBLE = 4
-    CHIMP = 5
+    CHIMPS = 5
