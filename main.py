@@ -46,7 +46,7 @@ def main():
     
     
     # loading test map for color picker feature___________________________________________
-    color_picker_tester = pygame.image.load(os.path.join(current_path, 'data', 'imgs', 'map_test.png'))
+    color_picker_tester = pygame.image.load(os.path.join(current_path, 'data', 'imgs', 'map_test.png')).convert()
 
     
     map_track, rp_list = parser.get_waypoints_list(

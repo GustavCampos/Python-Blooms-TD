@@ -1,15 +1,13 @@
 import os
 import time
 import pygame
+from packages.enumerations.map_mode import MapMode
+from packages.game_instances.map_instance import MapInstance
 from packages.graphics.button import Button
-from packages.graphics.menus.main_menu import MainMenu
 
 class Game:
-    def __init__(self, CONFIG_OPT) -> None:
-        pygame.init()
-        pygame.display.init()
-        pygame.font.init()
-        
+    def __init__(self, CONFIG_OPT) -> None:     
+        self.GLOBAL_COLOR_KEY_VALUE = (138, 111, 48)   
         self.clock = pygame.time.Clock()
         self.current_path = os.getcwd()
         self.game_icon = pygame.image.load(os.path.join(self.current_path, 'data', 'imgs', 'icon.png'))
@@ -45,7 +43,15 @@ class Game:
     
     
     def run(self) -> None:
-        self.main_menu()
+        pygame.init()
+        pygame.display.init()
+        pygame.font.init()
+        
+        self.main_menu() 
+        
+        pygame.font.quit()
+        pygame.display.quit()
+        pygame.quit()
     
     
     #TODO: Needs to refactor later        
@@ -96,7 +102,17 @@ class Game:
                     return
                 if (event.type == pygame.MOUSEBUTTONDOWN) and (event.button == 1):
                     if map_1_button.check_collide(*event.pos):
-                        pass
+                        map_instance = MapInstance(
+                            self, 
+                            MapMode.EASY,
+                            os.path.join(self.current_path, 'data', 'config', 'map_config', 'map1.txt'),
+                            os.path.join(self.current_path, 'data', 'config', 'wave_config', 'easy.txt'),
+                            os.path.join(self.current_path, 'data', 'imgs', 'color_picker_tester.png'),
+                            os.path.join(self.current_path, 'data', 'imgs', 'map_test.png')
+                        )
+                        
+                        map_instance.run()
+
                     if back_button.check_collide(*event.pos):
                         return
             
