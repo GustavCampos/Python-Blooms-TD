@@ -16,7 +16,7 @@ class Bullet(pygame.sprite.Sprite):
         
         
         #Automatcally Created Attributes
-        sprite_sheet = SpriteSheet(path_join(getcwd(), "data", 'imgs', 'bloom-spritesheet2.png'))
+        sprite_sheet = SpriteSheet(path_join(getcwd(), "data", 'imgs', 'bloom-spritesheet.png'))
         
         self.image = pygame.Surface.convert_alpha(sprite_sheet.get_image(0, 32, 32, 32))
         self.image = rotate_image_by_center(self.image, shoot_angle)

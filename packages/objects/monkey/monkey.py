@@ -2,4 +2,4 @@ import pygame
 
 class Monkey(pygame.sprite.Sprite):
     def __init__(self, x, y) -> None:
-        self.rect = pygame.Rect()
+        self.place_color = (0, 255, 0)
