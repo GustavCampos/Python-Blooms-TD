@@ -57,4 +57,4 @@ class Bullet(pygame.sprite.Sprite):
         self.move(delta_time)
         
         for bloom in pygame.sprite.spritecollide(self, bloom_sprite_group, False):
-            bloom.set_active(False)
+            bloom.start_death()
