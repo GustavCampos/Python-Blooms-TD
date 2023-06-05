@@ -1,5 +1,6 @@
 #Virtual Enviroment
 .venv
+.idea
 
 #Script Compiling
 *.pyc
