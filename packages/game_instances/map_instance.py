@@ -23,7 +23,8 @@ class MapInstance:
         bloom_track_path = os.path.join(os.getcwd(), 'data', 'config', 'wave_config', 'normal_game.txt')
                 
         self.gold = 650
-
+        self.last_gold = 0
+        self.last_life = 0
         #Dificult Based variables_________________
         match map_mode:
             case MapMode.EASY:                
@@ -180,8 +181,12 @@ class MapInstance:
             bullet_group.draw(self.surface_bullet)
             
             monkey_placeholder_group.update(self.surface_monkey)
-            
-            self.update_hud()
+
+            # IF condition purpose is to optimise frames: around 2x performance
+            if self.life != self.last_life or self.gold != self.last_gold:
+                self.update_hud()
+                self.last_life = self.life
+                self.last_gold = self.gold
             
             self.game_object.display_surface.blit(self.surface_map_image, (self.map_x_axis,0))
             self.game_object.display_surface.blit(self.surface_bloom.convert_alpha(), (self.map_x_axis,0))
