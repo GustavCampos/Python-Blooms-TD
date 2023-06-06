@@ -12,7 +12,7 @@ class Bullet(pygame.sprite.Sprite):
                  shoot_range: int, 
                  velocity: int=1, 
                  damage: int=1, 
-                 penetration: int=0, 
+                 pierce: int=0, 
                  pass_when_die: bool=True) -> None:
         super().__init__()
         
@@ -20,7 +20,7 @@ class Bullet(pygame.sprite.Sprite):
         self.shoot_range = shoot_range
         self.velocity = velocity
         self.damage = damage
-        self.penetration = penetration
+        self.pierce = pierce
         self.pass_when_die = pass_when_die
         
         #Automatcally Created Attributes
@@ -87,11 +87,11 @@ class Bullet(pygame.sprite.Sprite):
         map_instance.set_gold(map_instance.get_gold() + return_gold) 
         
     def calculate_penetration(self):
-        if self.penetration == 0:
+        if self.pierce == 0:
             self.kill()
             del self
         else:
-            self.penetration -= 1
+            self.pierce -= 1
         
     
     #Getters and Setters__________________________________________________________________________
