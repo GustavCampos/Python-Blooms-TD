@@ -11,12 +11,24 @@ class BloomRed(Bloom):
         image = pygame.Surface.convert_alpha(sprite_sheet.get_image(0, 0, 32, 32))
         
         super().__init__(
+            damage=1,
             image=image,
             track_map=track_map, 
             color=pygame.Color(0, 255, 0), 
-            velocity=1.1, 
+            velocity=1, 
             current_target=current_target,
             custom_x=custom_x,
             custom_y=custom_y
         )
+    
+    
+    def deal_damage(self, damage) -> int:
+        return_gold = 0
         
+        die = super().deal_damage(damage)
+        
+        if die:
+            return_gold += 1
+            self.start_death()
+            
+        return return_gold

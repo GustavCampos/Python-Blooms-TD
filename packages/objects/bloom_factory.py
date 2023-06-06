@@ -5,13 +5,14 @@ from packages.objects.bloom.blue import BloomBlue
 
 
 class BloomFactory:
-    def __init__(self, level_spawns: list[dict], waypoints_map: list) -> None:
+    def __init__(self, map_instance, level_spawns: list[dict], waypoints_map: list) -> None:
         ##Manually defined Attributes
         self.level_spawns = level_spawns
         self.map = waypoints_map
         
         
         ##Automatacally defined attributes
+        self.map_instance = map_instance
         self.x = waypoints_map[0].x
         self.y = waypoints_map[0].y
         self.color = pygame.Color(255, 0, 255)
@@ -37,8 +38,11 @@ class BloomFactory:
                     self.created_blooms.add(*blooms_created)
                     
             else:
+                if (bloom.get_win()):
+                    self.map_instance.deal_damage(bloom.get_damage())
+                
                 bloom.kill()
-                 
+ 
                 if len(self.created_blooms.sprites()) == 0:
                     self.current_bloom = 0
                     self.current_wave += 1

@@ -7,12 +7,13 @@ from packages.utilities.functions.image_functions import rotate_image_by_center
 
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, x: int, y: int, shoot_angle: float, shoot_range: int, velocity: int=1) -> None:
+    def __init__(self, x: int, y: int, shoot_angle: float, shoot_range: int, velocity: int=1, damage: int=1) -> None:
         super().__init__()
         
         #Manually Created Attributes
         self.shoot_range = shoot_range
         self.velocity = velocity
+        self.damage = damage
         
         
         #Automatcally Created Attributes
@@ -53,8 +54,12 @@ class Bullet(pygame.sprite.Sprite):
         
         self.rect.center = [self.vector.x, self.vector.y]
         
-    def update(self, bloom_sprite_group, delta_time) -> None: 
+    def update(self, map_instance, bloom_sprite_group, delta_time) -> int:
         self.move(delta_time)
-        
+
+        return_gold = 0         
         for bloom in pygame.sprite.spritecollide(self, bloom_sprite_group, False):
-            bloom.start_death()
+            if not bloom.is_dying:
+                return_gold += bloom.deal_damage(self.damage)
+            
+        map_instance.set_gold(map_instance.get_gold() + return_gold) 

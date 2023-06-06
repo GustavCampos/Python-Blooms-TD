@@ -79,12 +79,12 @@ class MapInstance:
             #_________________________________________________________________________________
         
         map_image = pygame.image.load(map_image_path).convert()
-        self.surface_map_image = pygame.transform.smoothscale(map_image, reference_surface.get_size())
+        self.surface_map_image = pygame.transform.smoothscale(map_image, reference_surface.get_size()).convert()
         
         colision_map = pygame.image.load(colision_map_path).convert()
         self.surface_colision_map = game_object.display_surface.copy()
         self.surface_colision_map.blit(
-            pygame.transform.smoothscale(colision_map, reference_surface.get_size()), 
+            pygame.transform.smoothscale(colision_map, reference_surface.get_size()).convert(),
             (self.map_x_axis, 0)
         )
         
@@ -125,37 +125,25 @@ class MapInstance:
         #______________________________________________________________________________________________
         
     
-    def update_hud(self) -> pygame.Surface:
-        self.surface_hud.fill(self.surface_hud.get_colorkey())
-        map_slice = round(self.surface_hud.get_width() * 0.15)
-        
-        life_quantity = self.font.render(str(self.life), False, (255,255,255))
-        coin_quantity = self.font.render(str(self.gold), False, (255, 255, 255))
-        
-        self.surface_hud.blit(self.heart_image, (10, 10))
-        self.surface_hud.blit(life_quantity, (self.heart_image.get_width(), 10))
-        self.surface_hud.blit(self.coin_image, (map_slice + 10, 10))
-        self.surface_hud.blit(coin_quantity, (
-            map_slice + self.coin_image.get_width() + 10,
-            10
-        ))
-        
-    
     def run(self):
-        bloom_factory = BloomFactory(self.bloom_track, self.map_track)
+        bloom_factory = BloomFactory(self, self.bloom_track, self.map_track)
         
         #Sprite Groups_______________________________________________________________________
         bullet_group = pygame.sprite.Group()
         monkey_placeholder_group = pygame.sprite.Group()
         #____________________________________________________________________________________
-        
+        double_delta_time = False
         
         while self.game_object.get_game_is_running():
             delta_time = self.game_object.calculate_delta_time()
+            if double_delta_time:
+                delta_time *= 2
             
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.game_object.set_game_is_running(False)
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                    double_delta_time = not double_delta_time
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         monkey_placeholder = MonkeyPlaceholder('jorge', self.surface_colision_map)
@@ -167,33 +155,73 @@ class MapInstance:
                         bullet_group.add(bullet)
             
             #Render Frame_______________________________________________________________________
-            self.game_object.display_surface.fill((0, 0, 0))
-            self.surface_bloom.fill(self.surface_bloom.get_colorkey())
-            self.surface_bullet.fill(self.surface_bullet.get_colorkey())
-            self.surface_monkey.fill(self.surface_monkey.get_colorkey())
+            self.reset_game_object_display()
             
+            #Run Blooms
             bloom_factory.run_map(
                 self.surface_bloom,
                 delta_time
             )
             
-            bullet_group.update(bloom_factory.created_blooms, delta_time)
+            #Run Bullets
+            bullet_group.update(self, bloom_factory.created_blooms, delta_time)
             bullet_group.draw(self.surface_bullet)
             
+            #Run Colision Check to verify if a monkey is placeable
             monkey_placeholder_group.update(self.surface_monkey)
 
-            # IF condition purpose is to optimise frames: around 2x performance
-            if self.life != self.last_life or self.gold != self.last_gold:
+            # IF condition to optimise frames: around 2x //////////////////
+            life_changed = self.life != self.last_life
+            gold_changed = self.gold != self.last_gold
+            
+            if life_changed or gold_changed:
                 self.update_hud()
                 self.last_life = self.life
-                self.last_gold = self.gold
+                self.last_gold = self.gold                
+            #^/////////////////////////////////////////////////////////////
             
-            self.game_object.display_surface.blit(self.surface_map_image, (self.map_x_axis,0))
-            self.game_object.display_surface.blit(self.surface_bloom.convert_alpha(), (self.map_x_axis,0))
-            self.game_object.display_surface.blit(self.surface_bullet.convert_alpha(), (self.map_x_axis,0))
-            self.game_object.display_surface.blit(self.surface_monkey.convert_alpha(), (self.map_x_axis,0))
-            self.game_object.display_surface.blit(self.surface_hud.convert_alpha(), (self.map_x_axis, 0))
+            self.update_game_object_display()
             #___________________________________________________________________________________
-                    
             self.game_object.loop_setdown()
             
+            
+    def reset_game_object_display(self) -> None:
+        self.game_object.display_surface.fill((0, 0, 0))
+        self.surface_bloom.fill(self.surface_bloom.get_colorkey())
+        self.surface_bullet.fill(self.surface_bullet.get_colorkey())
+        self.surface_monkey.fill(self.surface_monkey.get_colorkey())
+            
+    def update_game_object_display(self) -> None:
+        self.game_object.display_surface.blit(self.surface_map_image, (self.map_x_axis,0))
+        self.game_object.display_surface.blit(self.surface_bloom, (self.map_x_axis,0))
+        self.game_object.display_surface.blit(self.surface_bullet, (self.map_x_axis,0))
+        self.game_object.display_surface.blit(self.surface_monkey, (self.map_x_axis,0))
+        self.game_object.display_surface.blit(self.surface_hud, (self.map_x_axis, 0))
+            
+    def update_hud(self) -> pygame.Surface:
+        self.surface_hud.fill(self.surface_hud.get_colorkey())
+        map_slice = round(self.surface_hud.get_width() * 0.15)
+        
+        life_quantity = self.font.render(str(self.life), False, (255,255,255))
+        coin_quantity = self.font.render(str(self.gold), False, (255, 255, 255))
+        
+        self.surface_hud.blit(self.heart_image, (10, 10))
+        self.surface_hud.blit(life_quantity, ((self.heart_image.get_width() + 12), 10))
+        self.surface_hud.blit(self.coin_image, (map_slice + 10, 10))
+        self.surface_hud.blit(coin_quantity, (
+            map_slice + self.coin_image.get_width() + 12,
+            10
+        ))
+            
+    def deal_damage(self, damage: int) -> None:
+        new_life = self.life - damage
+        self.life = new_life if new_life >= 0 else 0
+            
+            
+    #Getters and Setters_______________________________________________________________________________
+    def get_gold(self) -> int:
+        return self.gold
+    
+    
+    def set_gold(self, value) -> None:
+        self.gold = value

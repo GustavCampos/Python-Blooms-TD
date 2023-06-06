@@ -8,6 +8,7 @@ class Bloom(pygame.sprite.Sprite):
     def __init__(self, track_map: list, 
                  color: pygame.Color, 
                  image: pygame.Surface,
+                 damage: int,
                  life: int=1,
                  velocity: int=1, 
                  current_target: int=1,
@@ -18,6 +19,7 @@ class Bloom(pygame.sprite.Sprite):
         #Manually Defined Attributes
         self.track_map = track_map
         self.color = color
+        self.damage = damage
         self.life = life
         self.velocity = velocity
         self.current_target = current_target
@@ -31,6 +33,7 @@ class Bloom(pygame.sprite.Sprite):
         self.death_duration = 3 #Duration frame quantity for death animation
         self.death_frame = 0
         self.is_dying = False
+        self.winner = False
         
         x = custom_x if custom_x > -1 else track_map[0].x
         y = custom_y if custom_y > -1 else track_map[0].y
@@ -72,6 +75,11 @@ class Bloom(pygame.sprite.Sprite):
             if x_reached and y_reached:
                 self.current_target += 1
             
+            
+    def deal_damage(self, damage) -> bool:
+        self.life -= damage
+        
+        return (self.life <= 0)
     
     def start_death(self):
         self.is_dying = True
@@ -79,12 +87,15 @@ class Bloom(pygame.sprite.Sprite):
         
       
     def win(self) -> None:
+        self.set_win(True)
         self.set_active(False)
     
     
     ##Getters and Setters____________________________________________
-    def set_active(self, bool: bool) -> None:
-        self.active = bool
-        
-    def get_active(self) -> bool:
-        return self.active
+    def set_active(self, bool: bool) -> None: self.active = bool
+    def get_active(self) -> bool: return self.active
+    
+    def set_win(self, bool: bool) -> None: self.winner = bool
+    def get_win(self) -> bool: return self.winner
+    
+    def get_damage(self) -> int: return self.damage
