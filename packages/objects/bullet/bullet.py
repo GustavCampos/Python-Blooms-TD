@@ -7,14 +7,21 @@ from packages.utilities.functions.image_functions import rotate_image_by_center
 
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, x: int, y: int, shoot_angle: float, shoot_range: int, velocity: int=1, damage: int=1) -> None:
+    def __init__(self, x: int, y: int, 
+                 shoot_angle: float, 
+                 shoot_range: int, 
+                 velocity: int=1, 
+                 damage: int=1, 
+                 penetration: int=0, 
+                 pass_when_die: bool=True) -> None:
         super().__init__()
         
         #Manually Created Attributes
         self.shoot_range = shoot_range
         self.velocity = velocity
         self.damage = damage
-        
+        self.penetration = penetration
+        self.pass_when_die = pass_when_die
         
         #Automatcally Created Attributes
         sprite_sheet = SpriteSheet(path_join(getcwd(), "data", 'imgs', 'bloom-spritesheet.png'))
@@ -28,7 +35,9 @@ class Bullet(pygame.sprite.Sprite):
         self.target_vector = pygame.math.Vector2(
             self.vector.x + (cos(shoot_angle) * shoot_range), #x_axis
             self.vector.y + (sin(shoot_angle) * shoot_range)  #y_axis
-        ) 
+        )
+        
+        self.damaged_blooms = []
 
     
     def draw(self, surface: pygame.Surface) -> None:
@@ -57,9 +66,34 @@ class Bullet(pygame.sprite.Sprite):
     def update(self, map_instance, bloom_sprite_group, delta_time) -> int:
         self.move(delta_time)
 
+        #Calculate colisions and gold gain
         return_gold = 0         
         for bloom in pygame.sprite.spritecollide(self, bloom_sprite_group, False):
-            if not bloom.is_dying:
-                return_gold += bloom.deal_damage(self.damage)
-            
+            if not bloom.is_dying and bloom not in self.damaged_blooms:
+                damage_response = bloom.deal_damage(self.damage) 
+                
+                return_gold = return_gold + damage_response['gold']
+                
+                self.damaged_blooms.append(bloom)
+                if damage_response['blooms']:
+                    self.damaged_blooms.append(*damage_response['blooms'])
+                    
+                bloom_alive = damage_response['gold'] == 0
+                if self.pass_when_die and bloom_alive:
+                    self.calculate_penetration()
+                elif not self.pass_when_die:
+                    self.calculate_penetration()
+                    
         map_instance.set_gold(map_instance.get_gold() + return_gold) 
+        
+    def calculate_penetration(self):
+        if self.penetration == 0:
+            self.kill()
+            del self
+        else:
+            self.penetration -= 1
+        
+    
+    #Getters and Setters__________________________________________________________________________
+    def get_damage(self) -> int: return self.damage
+    def set_damage(self, value) -> None: self.damage = value

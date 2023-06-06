@@ -22,13 +22,16 @@ class BloomBlue(Bloom):
         )
         
         
-    def deal_damage(self, damage) -> int:
-        return_gold = 0
+    def deal_damage(self, damage) -> dict:
+        return_list = {
+            'gold': 0,
+            'blooms': None 
+        }
         
         die = super().deal_damage(damage)
         
         if die:
-            return_gold += 1
+            return_list['gold'] += 1
             self.start_death()
             
-        return return_gold
+        return return_list

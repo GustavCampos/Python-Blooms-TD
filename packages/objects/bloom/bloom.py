@@ -34,6 +34,7 @@ class Bloom(pygame.sprite.Sprite):
         self.death_frame = 0
         self.is_dying = False
         self.winner = False
+        self.return_blooms = None
         
         x = custom_x if custom_x > -1 else track_map[0].x
         y = custom_y if custom_y > -1 else track_map[0].y
@@ -51,6 +52,7 @@ class Bloom(pygame.sprite.Sprite):
         if self.is_dying:
             if self.death_frame >= self.death_duration:
                 self.set_active(False)
+                return self.return_blooms
             else:
                 self.death_frame += delta_time
         else:
@@ -78,7 +80,6 @@ class Bloom(pygame.sprite.Sprite):
             
     def deal_damage(self, damage) -> bool:
         self.life -= damage
-        
         return (self.life <= 0)
     
     def start_death(self):

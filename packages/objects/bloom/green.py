@@ -3,6 +3,7 @@ from packages.objects.bloom.bloom import Bloom
 from os import getcwd
 from os.path import join as path_join
 from packages.graphics.sprite_sheet import SpriteSheet
+from packages.objects.bloom.red import BloomRed
 
 class BloomGreen(Bloom):
     def __init__(self, track_map: list, current_target: int = 1,
@@ -22,13 +23,28 @@ class BloomGreen(Bloom):
         )
         
         
-    def deal_damage(self, damage) -> int:
-        return_gold = 0
+    def deal_damage(self, damage) -> dict:
+        return_list = {
+            'gold': 0,
+            'blooms': None
+        }
         
         die = super().deal_damage(damage)
         
         if die:
-            return_gold += 1
-            self.start_death()
+            spawn_red = (self.life >= -1)
+            if spawn_red:
+                return_list['blooms'] = [
+                    BloomRed(
+                        self.track_map, 
+                        self.current_target, 
+                        self.vector.x, 
+                        self.vector.y
+                    )
+                ]
             
-        return return_gold
+            return_list['gold'] += 1
+            self.start_death()
+        
+        self.return_blooms = return_list['blooms']    
+        return return_list
