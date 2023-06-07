@@ -151,7 +151,7 @@ class MapInstance:
                     if event.button == 3:
                         mx, my = pygame.mouse.get_pos()
                         
-                        bullet = Bullet(mx, my, radians(180), 1000, 10)
+                        bullet = Bullet(mx, my, radians(180), 1000, 20)
                         bullet_group.add(bullet)
             
             #Render Frame_______________________________________________________________________

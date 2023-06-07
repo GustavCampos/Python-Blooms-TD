@@ -27,22 +27,26 @@ class MonkeyPlaceholder(pygame.sprite.Sprite):
     def update(self, surface: pygame.Surface) -> None:
         mouse_x, mouse_y = pygame.mouse.get_pos()
         self.rect.center = [mouse_x, mouse_y]
-        
-        colision_subsurface = self.colision_surface.subsurface(self.rect)
-        
-        #Treshold need to be this value to work to return a valid count bit value (1024)_____________________________
-        colision_mask = pygame.mask.from_threshold(colision_subsurface, self.place_color, (10, 10, 10, 255))
-        #________________________________________________________________________________________________________________
-        
-        mouse_buttons = pygame.mouse.get_pressed()
-        if not (mouse_buttons[0]):
-            pygame.mouse.set_visible(True)
-            self.kill()
-            return
+
+        try:        
+            colision_subsurface = self.colision_surface.subsurface(self.rect)
             
-        is_coliding = colision_mask.count() != 1024
-                    
-        self.draw(surface, is_coliding)
+            #Treshold need to be this value to work to return a valid count bit value (1024)_____________________________
+            colision_mask = pygame.mask.from_threshold(colision_subsurface, self.place_color, (10, 10, 10, 255))
+            #________________________________________________________________________________________________________________
+            
+            mouse_buttons = pygame.mouse.get_pressed()
+            if not (mouse_buttons[0]):
+                pygame.mouse.set_visible(True)
+                self.kill()
+                return
+                
+            is_coliding = colision_mask.count() != 1024
+                        
+            self.draw(surface, is_coliding)
+            
+        except ValueError:
+            pass
         
     def spawn_monkey(self):
         pass

@@ -12,7 +12,7 @@ class Bullet(pygame.sprite.Sprite):
                  shoot_range: int, 
                  velocity: int=1, 
                  damage: int=1, 
-                 pierce: int=0, 
+                 pierce: int=1, 
                  pass_when_die: bool=True) -> None:
         super().__init__()
         
@@ -78,16 +78,14 @@ class Bullet(pygame.sprite.Sprite):
                 if damage_response['blooms']:
                     self.damaged_blooms.append(*damage_response['blooms'])
                     
-                bloom_alive = damage_response['gold'] == 0
-                if self.pass_when_die and bloom_alive:
-                    self.calculate_penetration()
-                elif not self.pass_when_die:
+                bloom_alive = (damage_response['blooms'] != None)
+                if not self.pass_when_die or (self.pass_when_die and bloom_alive):
                     self.calculate_penetration()
                     
         map_instance.set_gold(map_instance.get_gold() + return_gold) 
         
     def calculate_penetration(self):
-        if self.pierce == 0:
+        if self.pierce == 1:
             self.kill()
             del self
         else:
