@@ -25,6 +25,7 @@ class BloomFactory:
         self.current_bloom_quantity = 1
         self.current_frame = 0
         
+        
     def draw(self, surface: pygame.display) -> None:
         pygame.draw.rect(surface, self.color, self.rect)
         
@@ -73,6 +74,7 @@ class BloomFactory:
                 
                 if go_next_bloom:
                     self.current_bloom += 1
+
 
     def check_bloom_quantity(self, current_bloom: dict) -> bool:
         all_blooms_created = (

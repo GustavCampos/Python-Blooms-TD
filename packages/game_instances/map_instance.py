@@ -1,6 +1,8 @@
+import math
 import os
 import pygame
 from math import radians
+from packages.enumerations.monkey_type import MonkeyType
 from packages.graphics.sprite_sheet import SpriteSheet
 from packages.objects.bloom_factory import BloomFactory
 from packages.objects.bullet.bullet import Bullet
@@ -131,8 +133,11 @@ class MapInstance:
         #Sprite Groups_______________________________________________________________________
         bullet_group = pygame.sprite.Group()
         monkey_placeholder_group = pygame.sprite.Group()
+        monkey_group = pygame.sprite.Group()
         #____________________________________________________________________________________
         double_delta_time = False
+        
+        angle = 0
         
         while self.game_object.get_game_is_running():
             delta_time = self.game_object.calculate_delta_time()
@@ -146,13 +151,22 @@ class MapInstance:
                     double_delta_time = not double_delta_time
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
-                        monkey_placeholder = MonkeyPlaceholder('jorge', self.surface_colision_map)
+                        monkey_placeholder = MonkeyPlaceholder(
+                            MonkeyType.DART_MONKEY, 
+                            self.surface_colision_map,
+                            monkey_group
+                        )
                         monkey_placeholder_group.add(monkey_placeholder)
                     if event.button == 3:
                         mx, my = pygame.mouse.get_pos()
                         
-                        bullet = Bullet(mx, my, radians(180), 1000, 20)
+                        bullet = Bullet(mx, my, radians(0), 1000, 20)
                         bullet_group.add(bullet)
+                        
+                        angle += math.pi / 4
+                        
+                        if angle > 2*math.pi:
+                            angle = 0
             
             #Render Frame_______________________________________________________________________
             self.reset_game_object_display()
@@ -161,6 +175,14 @@ class MapInstance:
             bloom_factory.run_map(
                 self.surface_bloom,
                 delta_time
+            )
+            
+            #Run Monkeys
+            monkey_group.update(
+                delta_time,
+                self.surface_monkey, 
+                bloom_factory.created_blooms,
+                bullet_group
             )
             
             #Run Bullets

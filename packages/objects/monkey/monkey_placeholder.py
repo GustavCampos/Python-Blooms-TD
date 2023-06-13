@@ -1,10 +1,15 @@
 import pygame
+from packages.enumerations.monkey_type import MonkeyType
 from packages.objects.monkey.monkey import Monkey
 
 class MonkeyPlaceholder(pygame.sprite.Sprite):
-    def __init__(self, monkey: str,  colision_surface: pygame.Surface, place_color=pygame.Color(0, 255, 0)) -> None:
+    def __init__(self, monkey: MonkeyType,
+                colision_surface: pygame.Surface,
+                monkey_group: pygame.sprite.Group,
+                place_color=pygame.Color(0, 255, 0)) -> None:
         super().__init__()
         
+        self.monkey_group = monkey_group
         self.monkey = monkey
         self.place_color = place_color
         
@@ -31,22 +36,30 @@ class MonkeyPlaceholder(pygame.sprite.Sprite):
         try:        
             colision_subsurface = self.colision_surface.subsurface(self.rect)
             
-            #Treshold need to be this value to work to return a valid count bit value (1024)_____________________________
+            #Treshold need to be this value to work to return a valid count bit value (1024)__________________
             colision_mask = pygame.mask.from_threshold(colision_subsurface, self.place_color, (10, 10, 10, 255))
-            #________________________________________________________________________________________________________________
+            #__________________________________________________________________________________________________           
+            is_coliding = colision_mask.count() != 1024
             
             mouse_buttons = pygame.mouse.get_pressed()
             if not (mouse_buttons[0]):
-                pygame.mouse.set_visible(True)
+                if not is_coliding:
+                    self.spawn_monkey()
+                
+                pygame.mouse.set_visible(True)    
                 self.kill()
                 return
                 
-            is_coliding = colision_mask.count() != 1024
-                        
             self.draw(surface, is_coliding)
             
         except ValueError:
             pass
         
     def spawn_monkey(self):
-        pass
+        match self.monkey:
+            case MonkeyType.DART_MONKEY:
+                monkey = Monkey(*self.rect.center)
+            case _:
+                return
+            
+        self.monkey_group.add(monkey)
