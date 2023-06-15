@@ -11,23 +11,21 @@ class Raycast(object):
     def get_angle(self):
         bloom_vector = self.bloom_to_track.vector
         
-        normalized_target_xy =  [
-            bloom_vector.x - self.vector.x,
-            bloom_vector.y - self.vector.y
-        ]
+        normalized_x = bloom_vector.x - self.vector.x
+        normalized_y = bloom_vector.y - self.vector.y
+                
+        #This calculate arctan(opossite/adjacent) in formed triangle
+        #But this only returns the variation from radian 0 (-pi to pi)
+        angle = atan(normalized_y / normalized_x)
         
-        angle_tangent = (normalized_target_xy[0] / normalized_target_xy[1])
-        return_angle = atan(angle_tangent)
-        
-        print(f'ridian: {return_angle}\ndegree: {degrees(return_angle)}')
-        return return_angle 
+        #To get the right angle when normalized_x is negative
+        #We add half circle to the given variation above
+        return angle if normalized_x >= 0 else (angle + pi)
         
     def match_distance(self, distance) -> bool:
         distance_squared = pow(distance, 2)
         
         calculated_distance = self.vector.distance_squared_to(self.bloom_to_track.vector)
-        
-        # print(f'current: {calculated_distance}, reference: {distance_squared}')
         
         if calculated_distance <= distance_squared:
             return True

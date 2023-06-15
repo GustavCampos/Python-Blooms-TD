@@ -157,16 +157,6 @@ class MapInstance:
                             monkey_group
                         )
                         monkey_placeholder_group.add(monkey_placeholder)
-                    if event.button == 3:
-                        mx, my = pygame.mouse.get_pos()
-                        
-                        bullet = Bullet(mx, my, radians(0), 1000, 20)
-                        bullet_group.add(bullet)
-                        
-                        angle += math.pi / 4
-                        
-                        if angle > 2*math.pi:
-                            angle = 0
             
             #Render Frame_______________________________________________________________________
             self.reset_game_object_display()
