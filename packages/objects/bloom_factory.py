@@ -105,10 +105,10 @@ class BloomFactory:
     def create_bloom(self, bloom: dict):
         match bloom["bloom"]:
             case "red":
-                created_bloom = BloomRed(self.map)
+                created_bloom = BloomRed(self.map, self.map_instance.surface_map_image)
             case "green":
-                created_bloom = BloomGreen(self.map)
+                created_bloom = BloomGreen(self.map, self.map_instance.surface_map_image)
             case "blue":
-                created_bloom = BloomBlue(self.map)
+                created_bloom = BloomBlue(self.map, self.map_instance.surface_map_image)
                 
         self.created_blooms.add(created_bloom)

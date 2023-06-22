@@ -5,7 +5,8 @@ from packages.graphics.sprite_sheet import SpriteSheet
 
 
 class Bloom(pygame.sprite.Sprite):
-    def __init__(self, track_map: list, 
+    def __init__(self, track_map: list,
+                 map_surface: pygame.Surface,
                  color: pygame.Color, 
                  image: pygame.Surface,
                  damage: int,
@@ -23,10 +24,23 @@ class Bloom(pygame.sprite.Sprite):
         self.life = life
         self.velocity = velocity
         self.current_target = current_target
+        self.map_surface = map_surface
                 
         #Automatically Defined Attributes
+        sprite_size = (map_surface.get_height() * 0.06)
+        print(sprite_size)
+        print(image.get_size())
+        
+        #Get pop_image
         sprite_sheet = SpriteSheet(path_join(getcwd(), "data", 'imgs', 'bloom-spritesheet.png'))
         pop_image = pygame.Surface.convert_alpha(sprite_sheet.get_image(0, 64, 32, 32))
+        
+        #scales bloom sprites
+        pop_image = pygame.transform.scale(pop_image, (sprite_size, sprite_size))
+        image = pygame.transform.scale(image, (sprite_size, sprite_size))
+        
+        print(image.get_size())
+        
         self.popimage = pop_image
         self.image = image
         self.active = True

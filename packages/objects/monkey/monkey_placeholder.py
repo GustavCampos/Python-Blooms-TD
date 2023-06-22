@@ -6,12 +6,14 @@ class MonkeyPlaceholder(pygame.sprite.Sprite):
     def __init__(self, monkey: MonkeyType,
                 colision_surface: pygame.Surface,
                 monkey_group: pygame.sprite.Group,
+                map_surface: pygame.Surface,
                 place_color=pygame.Color(0, 255, 0)) -> None:
         super().__init__()
         
         self.monkey_group = monkey_group
         self.monkey = monkey
         self.place_color = place_color
+        self.map_surface = map_surface
         
         self.colision_surface = colision_surface
         
@@ -27,6 +29,12 @@ class MonkeyPlaceholder(pygame.sprite.Sprite):
         self.surface.fill(fill_color)
         
         surface.blit(self.surface, (self.rect.x,self.rect.y))
+        pygame.draw.circle(
+            surface,
+            (0, 0, 0),
+            (self.rect.center),
+            self.monkey.shoot_range
+        )
 
         
     def update(self, surface: pygame.Surface) -> None:
@@ -58,7 +66,7 @@ class MonkeyPlaceholder(pygame.sprite.Sprite):
     def spawn_monkey(self):
         match self.monkey:
             case MonkeyType.DART_MONKEY:
-                monkey = Monkey(*self.rect.center)
+                monkey = Monkey(*self.rect.center, self.map_surface)
             case _:
                 return
             

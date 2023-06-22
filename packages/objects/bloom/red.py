@@ -5,7 +5,7 @@ from os.path import join as path_join
 from packages.graphics.sprite_sheet import SpriteSheet
 
 class BloomRed(Bloom):
-    def __init__(self, track_map: list, current_target: int = 1,
+    def __init__(self, track_map: list, map_surface: pygame.Surface, current_target: int = 1,
                  custom_x: int = -1, custom_y: int = -1) -> None:
         sprite_sheet = SpriteSheet(path_join(getcwd(), "data", 'imgs', 'bloom-spritesheet.png'))
         image = pygame.Surface.convert_alpha(sprite_sheet.get_image(0, 0, 32, 32))
@@ -18,7 +18,8 @@ class BloomRed(Bloom):
             velocity=1, 
             current_target=current_target,
             custom_x=custom_x,
-            custom_y=custom_y
+            custom_y=custom_y,
+            map_surface=map_surface
         )
     
     

@@ -1,11 +1,8 @@
-import math
 import os
 import pygame
-from math import radians
 from packages.enumerations.monkey_type import MonkeyType
 from packages.graphics.sprite_sheet import SpriteSheet
 from packages.objects.bloom_factory import BloomFactory
-from packages.objects.bullet.bullet import Bullet
 from packages.objects.monkey.monkey_placeholder import MonkeyPlaceholder
 import packages.utilities.functions.parser_functions as parser
 from packages.enumerations.map_mode import MapMode
@@ -98,6 +95,7 @@ class MapInstance:
         
         self.surface_monkey = reference_surface.copy()
         self.surface_monkey.set_colorkey(game_object.GLOBAL_COLOR_KEY_VALUE)
+        self.surface_monkey.set_alpha(100)
         
         self.surface_hud = reference_surface.copy()
         self.surface_hud.set_colorkey(game_object.GLOBAL_COLOR_KEY_VALUE)            
@@ -137,8 +135,6 @@ class MapInstance:
         #____________________________________________________________________________________
         double_delta_time = False
         
-        angle = 0
-        
         while self.game_object.get_game_is_running():
             delta_time = self.game_object.calculate_delta_time()
             if double_delta_time:
@@ -154,7 +150,8 @@ class MapInstance:
                         monkey_placeholder = MonkeyPlaceholder(
                             MonkeyType.DART_MONKEY, 
                             self.surface_colision_map,
-                            monkey_group
+                            monkey_group,
+                            self.surface_map_image
                         )
                         monkey_placeholder_group.add(monkey_placeholder)
             
