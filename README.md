@@ -1,6 +1,6 @@
 # Python-Blooms-TD
 
-![](data/img/icon.png)
+![](data/imgs/icon.png)
 
 ## Description
 Python-Blooms-TD is a game project developed with the goal of learning Python and game development. It aims to provide similar functionalities to the game BTD6.
