@@ -28,8 +28,8 @@ class Bloom(pygame.sprite.Sprite):
                 
         #Automatically Defined Attributes
         sprite_size = (map_surface.get_height() * 0.06)
-        print(sprite_size)
-        print(image.get_size())
+        #print(sprite_size)
+        #print(image.get_size())
         
         #Get pop_image
         sprite_sheet = SpriteSheet(path_join(getcwd(), "data", 'imgs', 'bloom-spritesheet.png'))
@@ -39,7 +39,7 @@ class Bloom(pygame.sprite.Sprite):
         pop_image = pygame.transform.scale(pop_image, (sprite_size, sprite_size))
         image = pygame.transform.scale(image, (sprite_size, sprite_size))
         
-        print(image.get_size())
+        # print(image.get_size())
         
         self.popimage = pop_image
         self.image = image

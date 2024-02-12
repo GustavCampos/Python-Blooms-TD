@@ -24,6 +24,7 @@ class MapInstance:
         self.gold = 650
         self.last_gold = 0
         self.last_life = 0
+        
         #Dificult Based variables_________________
         match map_mode:
             case MapMode.EASY:                
@@ -189,7 +190,7 @@ class MapInstance:
                 self.last_gold = self.gold                
             #^/////////////////////////////////////////////////////////////
             
-            self.update_game_object_display()
+            self.update_game_object_display(show_blooms_track=True)
             #___________________________________________________________________________________
             self.game_object.loop_setdown()
             
@@ -200,8 +201,20 @@ class MapInstance:
         self.surface_bullet.fill(self.surface_bullet.get_colorkey())
         self.surface_monkey.fill(self.surface_monkey.get_colorkey())
             
-    def update_game_object_display(self) -> None:
+    def update_game_object_display(self, show_colision_map=False, show_blooms_track=False) -> None:
+        #Map surface
         self.game_object.display_surface.blit(self.surface_map_image, (self.map_x_axis,0))
+        
+        #Game collision surface        
+        if show_colision_map:
+            self.game_object.display_surface.blit(self.surface_colision_map, (self.map_x_axis,0))
+        
+        if show_blooms_track:
+            for waypoint in self.map_track:
+                waypoint.draw(self.surface_bloom)
+            for waypoint in self.rp_list:
+                waypoint.draw(self.surface_bloom)
+        
         self.game_object.display_surface.blit(self.surface_bloom, (self.map_x_axis,0))
         self.game_object.display_surface.blit(self.surface_bullet, (self.map_x_axis,0))
         self.game_object.display_surface.blit(self.surface_monkey, (self.map_x_axis,0))
